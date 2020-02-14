@@ -49,10 +49,10 @@ public class LoggerController {
         try {
             Map<String,Object> map = new HashMap<>();
             if (StringUtils.isNotBlank(module) && StringUtils.isNotBlank(module.trim())){
-                map.put("module",module) ;
+                map.put("module",module);
             }
             if (StringUtils.isNotBlank(logDate) && StringUtils.isNotBlank(logDate.trim())){
-                map.put("logDate",logDate);
+                map.put("logDate",logDate) ;
             }else{
                 //默认当天的日志
                 map.put("logDate", DateUtil.getTodayStr());
