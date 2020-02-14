@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.demo.common.StatusConstant;
 import com.demo.dto.response.BaseRespDto;
 import com.demo.service.LogService;
+import com.demo.util.DateUtil;
 import com.demo.util.LogBuilderUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -52,6 +53,9 @@ public class LoggerController {
             }
             if (StringUtils.isNotBlank(logDate) && StringUtils.isNotBlank(logDate.trim())){
                 map.put("logDate",logDate);
+            }else{
+                //默认当天的日志
+                map.put("logDate", DateUtil.getTodayStr());
             }
             baseRespDto = logService.selectAllByPage(map,baseRespDto, page, limit);
             baseRespDto.setCode(StatusConstant.SUCCESS);

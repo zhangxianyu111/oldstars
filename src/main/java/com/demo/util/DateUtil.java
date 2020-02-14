@@ -129,7 +129,14 @@ public class DateUtil{
 
 
     /* ************工具方法***************   */
-
+    /**
+     * 获取当天日期
+     */
+    public static String getTodayStr(){
+        Date d=new Date();
+        SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD);
+        return sdf.format(d);
+    }
     /***
      * 判断字符串是否是yyyyMMddHHmmss格式
      * @param mes 字符串
