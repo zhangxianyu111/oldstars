@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.dao.LogPointerMapper">
+    <resultMap id="logResultMap" type="com.demo.pojo.LogPointer">
+        <result column="pointer" property="pointer" javaType="Long" jdbcType="BIGINT"/>
+    </resultMap>
+    <sql id="baseSql" >
+        pointer
+    </sql>
+    <update id="update" parameterType="java.lang.Long">
+        update log_pointer set pointer = #{pointer}
+    </update>
+    <select id="select" parameterType="java.lang.Long" resultMap="logResultMap">
+        select
+        <include refid="baseSql"/>
+        from log_pointer
+    </select>
+
+</mapper>
+

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.dao.LogMapper">
+    <resultMap id="logResultMap" type="com.demo.pojo.ErrorLogInfo">
+        <id column="id" property="id" javaType="Long" jdbcType="BIGINT"/>
+        <result column="module" property="module" javaType="String" jdbcType="VARCHAR"/>
+        <result column="log_title" property="logTitle" javaType="String" jdbcType="LONGVARCHAR"/>
+        <result column="log_desc" property="logDesc" javaType="String" jdbcType="LONGVARCHAR"/>
+        <result column="log_date" property="logDate" javaType="Date" jdbcType="TIMESTAMP"/>
+        <result column="create_date" property="createDate" javaType="Date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="baseSql" >
+        id,module,log_title,log_desc,log_date,create_date
+    </sql>
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.demo.pojo.ErrorLogInfo">
+        insert into error_log_info(module,log_title,log_desc,log_date,create_date) values(#{module},#{logTitle},#{logDesc},#{logDate},now())
+    </insert>
+    <delete id="delete" parameterType="map">
+        delete from error_log_info
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="module != null">
+                and module = #{module}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="com.demo.pojo.ErrorLogInfo">
+        update error_log_info
+        <set>
+            <if test="module != null">
+                module = #{module},
+            </if>
+            <if test="logTitle != null">
+                log_title = #{logTitle},
+            </if>
+            <if test="logDesc != null">
+                log_desc = #{logDesc},
+            </if>
+            <if test="logDate != null">
+                log_date = #{logDate},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="logResultMap">
+        select
+        <include refid="baseSql"/>
+        from error_log_info where id = #{id}
+    </select>
+    <select id="selectAll" parameterType="map" resultMap="logResultMap">
+        select
+        <include refid="baseSql"/>
+        from error_log_info
+        <where>
+            <if test="module != null">
+                and module like concat('%',#{module},"%")
+            </if>
+            <if test="logDate != null">
+                and log_date like concat('%',#{logDate},"%")
+            </if>
+        </where>
+        order by log_date desc
+    </select>
+    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long">
+        select
+        count(1)
+        from error_log_info
+        <where>
+            <if test="module != null">
+                and module like concat('%',#{module},"%")
+            </if>
+            <if test="logDate != null">
+                and log_date like concat('%',#{logDate},"%")
+            </if>
+        </where>
+    </select>
+    <delete id="deleteExpire" >
+        delete from error_log_info where create_date &lt; DATE_SUB(CURDATE(),INTERVAL 3 month );
+    </delete>
+
+</mapper>
+

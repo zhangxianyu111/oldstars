@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" type="text/css" href="public/layui/css/layui.css"/>
+    <script src="/jquery-3.2.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="public/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <title>Document</title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+            font-family: "微软雅黑";
+        }
+        body{
+            background-color: rgba(0,0,0,0.5);
+        }
+        #wai{
+            width:100%;
+            line-height: 70px;
+        }
+
+        .spp{
+            margin-left: 39px;
+        }
+        h1{
+            text-align: center;
+        }
+        p{
+            margin-left: -13%;
+            font-size: 18px;
+        }
+        input{
+            width: 200px;
+            height:30px;
+            border-radius: 5px;
+            border-color: lawngreen;
+        }
+        .p1{
+            margin-left: -7%;
+            margin-left: 13px;
+        }
+
+        #sel{
+            width: 200px;
+            border-radius: 5px;
+            border-color: lawngreen;
+            margin-left: 5px;
+        }
+        #spp1{
+            display: none;
+            color: red;
+
+        }
+        #spp2{
+            display: none;
+            color: red;
+
+        }
+        #spp3{
+            display: none;
+            color: red;
+
+        }
+
+    </style>
+</head>
+<body>
+<div id="zong">
+    <h1>添加任务</h1>
+    <div id="wai">
+        <span class="spp">任务名称：</span>
+        <input type="text"  id="zh" value="" placeholder="请输入大小写英文字母"/><span id="spp1">请重新输入</span><br />
+        <span class="spp">任务描述：</span>
+        <input type="text"  id="xm" value="" placeholder="请输入中文字符"/><span id="spp2">请重新输入</span><br />
+        <span class="spp">任务分组：</span>
+        <input type="password"  id="mm" value=""  placeholder="8-16位,至少1个大写字母，小写字母和数字"/><span id="spp3">请重新输入</span><br />
+        <span class="p1">表达式：</span>
+        <input class= "inp" type="text" id="test1" placeholder="年-月-日"><br />
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    $(function (){
+        jiazai();
+        //$("#zh").focus();
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#test1'
+            });
+        });
+    });
+    //账号的input失去焦点事件
+    $("#zh").blur(function(){
+        var zh = $("#zh").val();
+        var ret =  /[a-zA-Z]/;
+        if(!ret.test(zh)){
+            $("#spp1").css("display","inline-block");//inline-block在一行里显示
+        }
+    })
+    //姓名的input失去焦点事件
+    $("#xm").blur(function(){
+        var xm = $("#xm").val();
+        var ret = /^[\u4e00-\u9fa5]+$/;//只能输入中文
+        if(!ret.test(xm)){
+            $("#spp2").css("display","inline-block");
+        }
+    })
+    //密码的input失去焦点事件
+    $("#mm").blur(function(){
+        var mm = $("#mm").val();
+        var ret = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/;
+        //至少8-16个字符，至少1个大写字母，1个小写字母和1个数字，其他可以是任意字符
+        if(!ret.test(mm)){
+            $("#spp3").css("display","inline-block");
+        }
+    })
+    function jiazai(){
+        $.ajax({
+            type:"post",
+            url:"php/projectchuli.php",
+            async:true,
+            data:{
+                type:"jiazai"
+            },
+            dataType:"json",
+            success:function(data){
+                var str ="";
+                for(var i=0;i<data.length;i++){
+                    str +="<option>"+data[i]+"</option>";
+                }
+                $("#sel").html(str);
+            }
+        });
+    }
+</script>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  <!--  XML 配置文件包含对 MyBatis 系统的核心设置 -->
+<configuration>
+
+	<settings>
+	<!-- 指定 MyBatis 所用日志的具体实现，一般使用log4J,也可采用SLF4J ，推荐采用slf4j-->
+		<setting name="logImpl" value="SLF4J"/>
+		
+		<!-- 查询懒加载设置,配合关联查询配置中的fetchType属性使用，fetchType的属性值有eager和lazzy,eager表示立即加载 -->
+		<!-- lazyLoadingEnabled是懒加载全局开关属性 -->
+		<!-- aggressiveLazyLoading是设置使带有延迟加载属性的对象立即加载，false时会按需加载 -->
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<setting name="aggressiveLazyLoading" value="false"/>
+	</settings>
+
+
+</configuration>
