@@ -6,7 +6,6 @@ import com.demo.pojo.ErrorLogInfo;
 import com.demo.util.DateUtil;
 import com.demo.util.PropertiesUtil;
 import com.demo.util.StringUtil;
-import com.demo.util.TxtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,13 +15,17 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-@Component
+/**
+ *
+ * @author zje
+ *
+ */
+@Component(value = "loggerDBTimer")
 public class LoggerDBTimer {
-//    public static Long pointer; //上次文件大小
+    public static Long pointer; //上次文件大小
     private static final Logger logger = LoggerFactory.getLogger(LoggerDBTimer.class);
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
     @Resource
@@ -31,81 +34,42 @@ public class LoggerDBTimer {
     private LogPointerMapper logPointerMapper;
 
     static{
-//        PropertiesUtil.loadProps("logpath.properties");
+        PropertiesUtil.loadProps("logpath.properties");
         //pointer = Long.valueOf(XmlUtil.XMLReader2JDOM("logpath.properties"));
     }
     ExecutorService exec = Executors.newFixedThreadPool(5);
 
 
-    @Scheduled(cron = "0/10 * * * * ?")
+    //@Scheduled(cron = "0/10 * * * * ?")
     public void Scheduled() throws Exception{
         logger.info("每5分钟开始调用第三方接口查询读取日志任务咯");
-
-        /*//JingEn begin
         final File tmpLogFile = new File(PropertiesUtil.getProperty("logpath","logpath.properties"));
         realtimeShowLog(tmpLogFile);
-        //JingEn end*/
-
-        /**Byron start*/
-        String substring = LoggerDBTimer.class.getClassLoader().getResource("logpath.txt").toString().substring(6);
-        //可以配置多个日志的路径
-        List<String> projectFileList = TxtUtil.getProjectFileList(substring);
-        //每个路径下有可能有多个文件
-//        List<String> logFileList = null;
-        List<Map<String, String>> localFileDetail = null;
-
-        if(projectFileList != null){
-            for (String path: projectFileList){
-//                logFileList = TxtUtil.getFileList(path);
-                localFileDetail = TxtUtil.getLocalFileDetail(path);
-            }
-        }
-
-        if(localFileDetail != null){
-            for (Map<String, String> map: localFileDetail){
-                realtimeShowLog(map);
-            }
-        }
-        /**Byron end*/
         logger.info(dateFormat.format(new Date())+"--调用第三方接口查询读取日志结束");
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
+    //@Scheduled(cron = "0 0 1 * * ?")
     public void ScheduledDelete() throws Exception{
         logger.info("每天凌晨1点开始调用第三方接口删除数据库过期日志信息任务");
         logMapper.deleteExpire();
         logger.info("每天凌晨1点开始调用第三方接口删除数据库过期日志信息任务");
     }
 
-    public void realtimeShowLog(Map<String, String> map) throws Exception {
-        /*//jingEn begin
+    public void realtimeShowLog(File logFile) throws Exception {
+
         if (logFile == null) {
             throw new IllegalStateException("logFile can not be null");
         }
-        //jingEn end*/
 
         //启动一个线程读取新增的日志信息
         exec.execute(new Runnable() {
 
             @Override
             public void run() {
-                /**Byron start*/
-                if(map == null ){
-                    logger.error("realtimeShowLog Parameter 'map' is Null...");
-                    return ;
-                }
-                String configFilePath = map.get("configFilePath");
-                String file = map.get("logFile");
-                long pointer = Long.parseLong(map.get("pointer"));
-                if (file == null) {
-                    System.err.println("----------日志配置文件出错了----------");
-                    logger.error("-----------------日志配置文件出错了-------------------");
-                    return;
-                }
-                File logFile = new File(file);
-                /**Byron end*/
+
                 //获得变化部分
                 try {
+
                     long len = logFile.length();
                     if (len < pointer) {
                         logger.info("Log file was reset. Restarting logging from start of file.");
@@ -127,13 +91,7 @@ public class LoggerDBTimer {
                         ErrorLogInfo logInfo = null;
                         while ((tmp = randomFile.readLine()) != null) {
 
-                            /*//jingEn begin
                             String str = new String(tmp.getBytes("utf-8"));
-                            //jingEn end*/
-
-                            /**Byron start*/
-                            String str = new String(tmp.getBytes("ISO-8859-1"),"utf-8");
-                            /**Byron end*/
                             if (flag2){
                                 if (str.trim().length()<24){
                                     errorDesc.append(str).append("\n");
@@ -172,7 +130,7 @@ public class LoggerDBTimer {
                         //将读取的位置存储到properties文件
                         pointer = randomFile.getFilePointer();
                         //PropertiesUtil.writeOrderedPropertiesFile("logPath.properties","pointer",String.valueOf(pointer));
-//                        logPointerMapper.update(pointer);
+                        logPointerMapper.update(pointer);
                         randomFile.close();
                     }
 
@@ -181,13 +139,11 @@ public class LoggerDBTimer {
                     logger.warn(dateFormat.format(new Date()) + " File read error, pointer: " + pointer,e);
                 } finally {
                     //将pointer 落地以便下次启动的时候，直接从指定位置获取
-                    /**Byron start*/
-                    TxtUtil.replace(configFilePath, "pointer", pointer);
-                    /**Byron end*/
                 }
             }
 
         });
 
     }
+
 }
