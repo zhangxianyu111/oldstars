@@ -15,7 +15,7 @@ import java.util.Map;
 public interface LogService {
 
     //查询日志
-    BaseRespDto<ErrorLogInfo> selectAllByPage(Map<String,Object> paramMap,BaseRespDto respDto, Integer pageNum, Integer pageSize);
+    BaseRespDto selectAllByPage(Map<String,Object> paramMap,BaseRespDto respDto, Integer pageNum, Integer pageSize);
     //查询单挑日志
     void downloadLog(Long id, HttpServletResponse response);
 

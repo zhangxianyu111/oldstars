@@ -29,7 +29,7 @@ public class LogServiceImpl implements LogService {
     @Resource
     private LogMapper logDao;
     @Override
-    public BaseRespDto<ErrorLogInfo> selectAllByPage(Map<String, Object> paramMap,BaseRespDto respDto, Integer pageNum, Integer pageSize) {
+    public BaseRespDto selectAllByPage(Map<String, Object> paramMap,BaseRespDto respDto, Integer pageNum, Integer pageSize) {
         Long count = logDao.selectAllCount(paramMap);
         respDto.setCount(count);
         PageHelper.startPage(pageNum,pageSize);

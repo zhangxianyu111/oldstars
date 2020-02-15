@@ -10,6 +10,8 @@ import java.util.List;
 public class ZtreeNodeVO {
     // 最后一级名称
     private String name;
+    //是否展开
+    private boolean open = true;
     // 全路径名
     private String fullName;
     // 日志級別,注意不能取名为level，与Ztree中默认节点字段冲突
@@ -40,6 +42,15 @@ public class ZtreeNodeVO {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
+    }
+
     public List<ZtreeNodeVO> getChildren() {
         return children;
     }

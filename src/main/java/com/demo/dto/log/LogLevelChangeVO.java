@@ -10,25 +10,25 @@ public class LogLevelChangeVO {
     /**全名**/
     private String fullName;
     /**更改前的级别**/
-    private Level beforeLevel;
+    private String beforeLevel;
     /**更改后的级别**/
-    private Level afterLevel;
+    private String afterLevel;
     public String getFullName() {
         return fullName;
     }
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
-    public Level getBeforeLevel() {
+    public String getBeforeLevel() {
         return beforeLevel;
     }
-    public void setBeforeLevel(Level beforeLevel) {
+    public void setBeforeLevel(String beforeLevel) {
         this.beforeLevel = beforeLevel;
     }
-    public Level getAfterLevel() {
+    public String getAfterLevel() {
         return afterLevel;
     }
-    public void setAfterLevel(Level afterLevel) {
+    public void setAfterLevel(String afterLevel) {
         this.afterLevel = afterLevel;
     }
 }
