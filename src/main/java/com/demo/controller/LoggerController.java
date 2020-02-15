@@ -3,6 +3,7 @@ package com.demo.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.demo.common.StatusConstant;
 import com.demo.dto.response.BaseRespDto;
+import com.demo.quarz.LoggerDBTimer;
 import com.demo.service.LogService;
 import com.demo.util.DateUtil;
 import com.demo.util.LogBuilderUtil;
@@ -32,6 +33,8 @@ public class LoggerController {
 
     @Resource
     private LogService logService;
+    @Resource
+    private LoggerDBTimer loggerDBTimer;
 
     @RequestMapping(value="/logs",method= RequestMethod.GET)
     public String logsPage(){
@@ -62,7 +65,8 @@ public class LoggerController {
             LOGGER.info(LogBuilderUtil.getBuilder("selectLogs","查询日志信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){
             baseRespDto.setCode(StatusConstant.FAIL);
-            LOGGER.error("系统报错",e);
+            LOGGER.info(LogBuilderUtil.getBuilder("selectLogs","查询日志信息","系统异常")
+                    .build(),e);
         }
 
         return JSONObject.toJSONString(baseRespDto);
@@ -76,8 +80,31 @@ public class LoggerController {
             logService.downloadLog(id,response);
             LOGGER.info(LogBuilderUtil.getBuilder("downloadLog","下载错误日志信息","结束").build());
         }catch (Exception e){
-            LOGGER.error("系统报错",e);
+            LOGGER.info(LogBuilderUtil.getBuilder("downloadLog","下载错误日志信息","系统异常")
+                    .build(),e);
         }
+
+    }
+
+    @RequestMapping(value="/onekeybod",method= RequestMethod.POST,produces = {"text/html;charset=utf-8"})
+    @ResponseBody
+    public String onekeybod(){
+        LOGGER.info(LogBuilderUtil.getBuilder("onekeybod","一键同步","开始")
+                .build());
+        BaseRespDto baseRespDto = new BaseRespDto();
+        try {
+            loggerDBTimer.Scheduled();
+            LOGGER.info(LogBuilderUtil.getBuilder("onekeybod","一键同步","结束")
+                    .build());
+            baseRespDto.setMsg("同步成功");
+            baseRespDto.setCode(StatusConstant.SUCCESS);
+        }catch (Exception e){
+            LOGGER.info(LogBuilderUtil.getBuilder("onekeybod","一键同步","系统异常")
+                    .build(),e);
+            baseRespDto.setMsg("系统错误");
+            baseRespDto.setCode(StatusConstant.FAIL);
+        }
+        return JSONObject.toJSONString(baseRespDto);
 
     }
 }

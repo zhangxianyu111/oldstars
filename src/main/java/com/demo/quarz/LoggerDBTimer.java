@@ -113,7 +113,10 @@ public class LoggerDBTimer {
                             }
                             //如果获取到报错信息
                             if(flag){
-                                logInfo.setLogTitle(str.split(":")[0]);
+                                //java.lang.ArithmeticException: / by zero
+                                String bb = str.split(":")[0];
+                                String[] cc = bb.split("\\.");
+                                logInfo.setLogTitle(cc[cc.length-1]);
                                 errorDesc.append(str).append("\n");
                                 flag = false;
                                 flag2 = true;
