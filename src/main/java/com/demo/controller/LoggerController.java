@@ -65,7 +65,7 @@ public class LoggerController {
             LOGGER.info(LogBuilderUtil.getBuilder("selectLogs","查询日志信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){
             baseRespDto.setCode(StatusConstant.FAIL);
-            LOGGER.info(LogBuilderUtil.getBuilder("selectLogs","查询日志信息","系统异常")
+            LOGGER.error(LogBuilderUtil.getBuilder("selectLogs","查询日志信息","系统异常")
                     .build(),e);
         }
 
@@ -80,7 +80,7 @@ public class LoggerController {
             logService.downloadLog(id,response);
             LOGGER.info(LogBuilderUtil.getBuilder("downloadLog","下载错误日志信息","结束").build());
         }catch (Exception e){
-            LOGGER.info(LogBuilderUtil.getBuilder("downloadLog","下载错误日志信息","系统异常")
+            LOGGER.error(LogBuilderUtil.getBuilder("downloadLog","下载错误日志信息","系统异常")
                     .build(),e);
         }
 
@@ -99,7 +99,7 @@ public class LoggerController {
             baseRespDto.setMsg("同步成功");
             baseRespDto.setCode(StatusConstant.SUCCESS);
         }catch (Exception e){
-            LOGGER.info(LogBuilderUtil.getBuilder("onekeybod","一键同步","系统异常")
+            LOGGER.error(LogBuilderUtil.getBuilder("onekeybod","一键同步","系统异常")
                     .build(),e);
             baseRespDto.setMsg("系统错误");
             baseRespDto.setCode(StatusConstant.FAIL);

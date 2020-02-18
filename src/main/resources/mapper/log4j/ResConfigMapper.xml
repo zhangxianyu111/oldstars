@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.dao.log4j.ResLogMapper">
+    <resultMap id="cfgResultMap" type="com.demo.pojo.log4j.ResConfig">
+        <id column="CFGID" property="cfgId" javaType="Long" jdbcType="INTEGER"/>
+        <result column="CFGLEVEL" property="cfgLevel" javaType="String" jdbcType="VARCHAR"/>
+        <result column="CFGCLASS" property="cfgClass" javaType="String" jdbcType="VARCHAR"/>
+        <result column="CFGERRTYPE" property="cfgErrType" javaType="Date" jdbcType="VARCHAR"/>
+        <result column="CFGLIMIT" property="cfgLimit" javaType="String" jdbcType="INTEGER"/>
+        <result column="CFGUNIT" property="cfgUnit" javaType="String" jdbcType="TINYINT"/>
+        <result column="CFGCOUNT" property="cfgCount" javaType="String" jdbcType="INTEGER"/>
+        <result column="CREATETIME" property="createTime" javaType="String" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="baseSql" >
+        CFGID,CFGLEVEL,CFGCLASS,CFGERRTYPE,CFGLIMIT,CFGUNIT,CFGCOUNT,CREATETIME
+    </sql>
+    <select id="selectAll" parameterType="map" resultMap="cfgResultMap">
+        select
+        <include refid="baseSql"/>
+        from resconfig
+        order by CREATETIME desc
+    </select>
+    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long">
+        select
+        count(1)
+        from resconfig
+    </select>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="cfgResultMap">
+        select
+        <include refid="baseSql"/>
+        from resconfig
+        where CFGID = #{cfgId}
+    </select>
+    <select id="selectByIds" parameterType="java.lang.String" resultMap="cfgResultMap">
+        select
+        <include refid="baseSql"/>
+        from resconfig
+        where LOGID in (#{ids})
+    </select>
+
+</mapper>
+
