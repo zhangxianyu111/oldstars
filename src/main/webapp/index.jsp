@@ -66,11 +66,11 @@
                 <li class="layui-nav-item">
                     <a href="javascript:;">
                         <i class="layui-icon">&#xe612;</i>
-                        <em>定时任务</em>
+                        <em>配置管理</em>
                     </a>
                     <dl class="layui-nav-child">
                         <dd><a href="/qrtzJobDetails/qrtzIndex">动态定时任务</a></dd>
-                        <dd><a href="/qrtzJobDetails/logConfigIndex">动态日志配置</a></dd>
+                        <dd><a href="/logLevel/level/toList">日志级别管理</a></dd>
                     </dl>
                 </li>
 

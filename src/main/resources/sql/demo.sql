@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50547
 File Encoding         : 65001
 
-Date: 2020-02-14 14:38:56
+Date: 2020-02-17 16:53:08
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -79,7 +79,7 @@ CREATE TABLE `log_pointer` (
 -- ----------------------------
 -- Records of log_pointer
 -- ----------------------------
-INSERT INTO `log_pointer` VALUES ('18388266');
+INSERT INTO `log_pointer` VALUES ('21766242');
 
 -- ----------------------------
 -- Table structure for `qrtz_blob_triggers`
@@ -157,7 +157,7 @@ CREATE TABLE `qrtz_fired_triggers` (
 -- ----------------------------
 -- Records of qrtz_fired_triggers
 -- ----------------------------
-INSERT INTO `qrtz_fired_triggers` VALUES ('quartzScheduler', 'SKY-20190324EMI15816503588591581650359221', 'triggerName.loggerDBTimer.Scheduled', 'log', 'SKY-20190324EMI1581650358859', '1581662310062', '1581662340000', '5', 'ACQUIRED', null, null, '0', '0');
+INSERT INTO `qrtz_fired_triggers` VALUES ('quartzScheduler', 'SKY-20190324EMI15819098971011581909897106', 'triggerName.loggerDBTimer.Scheduled', 'log', 'SKY-20190324EMI1581909897101', '1581912090046', '1581912120000', '5', 'ACQUIRED', null, null, '0', '0');
 
 -- ----------------------------
 -- Table structure for `qrtz_job_details`
@@ -229,7 +229,7 @@ CREATE TABLE `qrtz_scheduler_state` (
 -- ----------------------------
 -- Records of qrtz_scheduler_state
 -- ----------------------------
-INSERT INTO `qrtz_scheduler_state` VALUES ('quartzScheduler', 'SKY-20190324EMI1581650358859', '1581662321857', '20000');
+INSERT INTO `qrtz_scheduler_state` VALUES ('quartzScheduler', 'SKY-20190324EMI1581909897101', '1581912099618', '20000');
 INSERT INTO `qrtz_scheduler_state` VALUES ('quartzScheduler1', 'SKY-20190324EMI1581558183320', '1581558567331', '20000');
 
 -- ----------------------------
@@ -307,8 +307,30 @@ CREATE TABLE `qrtz_triggers` (
 -- ----------------------------
 -- Records of qrtz_triggers
 -- ----------------------------
-INSERT INTO `qrtz_triggers` VALUES ('quartzScheduler', 'triggerName.loggerDBTimer.Scheduled', 'log', 'jobName.loggerDBTimer.Scheduled', 'log', null, '1581662340000', '1581662310000', '5', 'ACQUIRED', 'CRON', '1581650427000', '0', null, '0', '');
-INSERT INTO `qrtz_triggers` VALUES ('quartzScheduler', 'triggerName.loggerDBTimer.ScheduledDelete', 'log', 'jobName.loggerDBTimer.ScheduledDelete', 'log', null, '1581699600000', '-1', '5', 'WAITING', 'CRON', '1581650415000', '0', null, '0', '');
+INSERT INTO `qrtz_triggers` VALUES ('quartzScheduler', 'triggerName.loggerDBTimer.Scheduled', 'log', 'jobName.loggerDBTimer.Scheduled', 'log', null, '1581912120000', '1581912090000', '5', 'ACQUIRED', 'CRON', '1581650427000', '0', null, '0', '');
+INSERT INTO `qrtz_triggers` VALUES ('quartzScheduler', 'triggerName.loggerDBTimer.ScheduledDelete', 'log', 'jobName.loggerDBTimer.ScheduledDelete', 'log', null, '1581958800000', '1581906447833', '5', 'WAITING', 'CRON', '1581650415000', '0', null, '0', '');
+
+-- ----------------------------
+-- Table structure for `reslog`
+-- ----------------------------
+DROP TABLE IF EXISTS `reslog`;
+CREATE TABLE `reslog` (
+  `LOGID` int(20) NOT NULL AUTO_INCREMENT,
+  `CLASS` varchar(200) DEFAULT NULL,
+  `METHOD` varchar(100) DEFAULT NULL,
+  `CREATETIME` datetime DEFAULT NULL,
+  `LOGLEVEL` varchar(50) DEFAULT NULL,
+  `LOGLINE` varchar(255) DEFAULT NULL,
+  `MSG` varchar(4000) DEFAULT NULL,
+  PRIMARY KEY (`LOGID`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of reslog
+-- ----------------------------
+INSERT INTO `reslog` VALUES ('1', 'com.demo.quarz.LoggerDBTimer$1', 'run', '2020-02-17 13:20:00', 'WARN', 'com.demo.quarz.LoggerDBTimer$1.run(LoggerDBTimer.java:142)', '2020-02-17 11:23:40 File read error, pointer: null');
+INSERT INTO `reslog` VALUES ('2', 'com.demo.controller.LoggerController', 'selectLogs', '2020-02-17 12:05:10', 'ERROR', 'com.demo.controller.LoggerController.selectLogs(LoggerController.java:68)', 'selectLogs - 查询日志信息 - 系统异常');
+INSERT INTO `reslog` VALUES ('3', 'com.demo.quarz.LoggerDBTimer$1', 'run', '2020-02-17 09:30:00', 'WARN', 'com.demo.quarz.LoggerDBTimer$1.run(LoggerDBTimer.java:142)', '2020-02-17 11:24:59 File read error, pointer: null');
 
 -- ----------------------------
 -- Procedure structure for `del_data`

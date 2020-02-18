@@ -40,6 +40,9 @@
                             </div>
                             <button class="layui-btn layui-btn-blue" lay-filter="searchSubmit" id="submitData" data-type="reload" onclick="return false;" lay-submit="">查询</button>
                             <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+                            <span class="site-demo-button" id="layerDemo">
+                                <button class="layui-btn" data-method="notice">一键同步</button>
+                            </span>
                         </div>
                     </div>
                 </form>
@@ -128,6 +131,37 @@
             elem: '#logDate' //指定元素
         });
     });
+    //一键同步
+    $('#layerDemo .layui-btn').on('click', function(){
+        var othis = $(this), method = othis.data('method');
+        active[method] ? active[method].call(this, othis) : '';
+    });
+    var active = {
+        notice: function(){
+            //加载中样式...
+            var loading = layer.msg('同步中', {icon: 16, shade: 0.3, time: 0});
+            $.ajax({
+                type:"post",
+                url:"<%=basePath%>log/onekeybod",
+                async:true,
+                data:{},
+                dataType:"text",
+                success:function(data){
+                    debugger
+                    var result = $.parseJSON( data );
+                    if(result.code=="0"){
+                        layer.close(loading);
+                        layer.msg(result.msg,{icon: 6,time:2000,end:function () {
+                                location.reload();
+                            }});
+                    }else{
+                        layer.msg(result.msg,{icon: 5,time:2000});
+
+                    }
+                }
+            });
+        }
+    }
 
 </script>
 <script type="text/html" id="barDemo">

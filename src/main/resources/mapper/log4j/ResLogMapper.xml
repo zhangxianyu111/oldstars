@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.dao.log4j.ResLogMapper">
+    <resultMap id="logResultMap" type="com.demo.pojo.log4j.ResLog">
+        <id column="LOGID" property="logId" javaType="Long" jdbcType="BIGINT"/>
+        <result column="CLASS" property="logClass" javaType="String" jdbcType="VARCHAR"/>
+        <result column="METHOD" property="logMethod" javaType="String" jdbcType="VARCHAR"/>
+        <result column="CREATETIME" property="createTime" javaType="Date" jdbcType="TIMESTAMP"/>
+        <result column="LOGLEVEL" property="logLevel" javaType="String" jdbcType="VARCHAR"/>
+        <result column="LOGLINE" property="logLine" javaType="String" jdbcType="VARCHAR"/>
+        <result column="MSG" property="logMsg" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="baseSql" >
+        LOGID,CLASS,METHOD,CREATETIME,LOGLEVEL,LOGLINE,MSG
+    </sql>
+    <select id="selectAll" parameterType="map" resultMap="logResultMap">
+        select
+        <include refid="baseSql"/>
+        from reslog
+        <where>
+            <if test="logClass != null">
+                and CLASS like concat('%',#{logClass},"%")
+            </if>
+            <if test="logLevel != null">
+                and LOGLEVEL = #{logLevel}
+            </if>
+            <if test="sTime != null">
+                and CREATETIME <![CDATA[ >= ]]> #{sTime}
+            </if>
+            <if test="eTime != null">
+                and CREATETIME <![CDATA[ <= ]]> #{eTime}
+            </if>
+        </where>
+        order by CREATETIME desc
+        <if test="page != null">
+            #{page}
+        </if>
+    </select>
+    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long">
+        select
+        count(1)
+        from reslog
+        <where>
+            <if test="logClass != null">
+                and CLASS like concat('%',#{logClass},"%")
+            </if>
+            <if test="logLevel != null">
+                and LOGLEVEL = #{logLevel}
+            </if>
+        </where>
+    </select>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="logResultMap">
+        select
+        <include refid="baseSql"/>
+        from reslog
+        where LOGID = #{logId}
+    </select>
+    <select id="selectByIds" parameterType="java.lang.String" resultMap="logResultMap">
+        select
+        <include refid="baseSql"/>
+        from reslog
+        where LOGID in (#{ids})
+    </select>
+
+    <delete id="deleteExpire" >
+        delete from reslog where CREATETIME &lt; DATE_SUB(CURDATE(),INTERVAL 3 month );
+    </delete>
+
+</mapper>
+
