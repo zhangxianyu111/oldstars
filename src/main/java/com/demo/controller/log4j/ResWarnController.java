@@ -6,6 +6,7 @@ import com.demo.dto.response.BaseRespDto;
 import com.demo.dto.response.log4j.ResWarnRespDto;
 import com.demo.service.log4j.ResWarnService;
 import com.demo.util.LogBuilderUtil;
+import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,7 @@ public class ResWarnController {
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LOGGER.info(LogBuilderUtil.getBuilder("getAllWarn","查询日志信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){
+            MDC.put("exception", e.getClass().getName());
             LogBuilderUtil.failToLog(baseRespDto, e,LOGGER);
         }
         return baseRespDto;
@@ -53,6 +55,7 @@ public class ResWarnController {
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LOGGER.info(LogBuilderUtil.getBuilder("handleWarn","处理或批量处理告警信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){
+            MDC.put("exception", e.getClass().getName());
             LogBuilderUtil.failToLog(baseRespDto, e,LOGGER);
         }
         return baseRespDto;
@@ -71,6 +74,7 @@ public class ResWarnController {
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LOGGER.info(LogBuilderUtil.getBuilder("seeWarn","查看告警信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){
+            MDC.put("exception", e.getClass().getName());
             LogBuilderUtil.failToLog(baseRespDto, e,LOGGER);
         }
         return baseRespDto;

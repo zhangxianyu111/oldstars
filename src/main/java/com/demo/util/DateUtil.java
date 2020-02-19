@@ -129,6 +129,18 @@ public class DateUtil{
 
 
     /* ************工具方法***************   */
+    public static String getSubOrAddTime(int second){
+        SimpleDateFormat sdf=new SimpleDateFormat(DATE_TIME_FORMAT_YYYYMMDDHHMISS);
+        Date date=new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.SECOND, second);
+        Date time = calendar.getTime();
+        return sdf.format(time);
+
+    }
+
+
     public static boolean isToday(Date date){
         Calendar c1 = Calendar.getInstance();
         c1.setTime(date);

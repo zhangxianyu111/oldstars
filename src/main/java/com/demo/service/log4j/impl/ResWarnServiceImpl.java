@@ -8,11 +8,12 @@ import com.demo.pojo.log4j.ResWarn;
 import com.demo.service.log4j.ResWarnService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
-
+@Service
 public class ResWarnServiceImpl implements ResWarnService {
     @Resource
     private ResWarnMapper resWarnDao;
@@ -20,7 +21,7 @@ public class ResWarnServiceImpl implements ResWarnService {
     public ResWarnRespDto selectAllByPage(Map paramMap, ResWarnRespDto respDto) {
 
         PageHelper.startPage(Integer.valueOf(paramMap.get("page").toString()),Integer.valueOf(paramMap.get("limit").toString()));
-        List<ResLog> logs = resWarnDao.selectAll(paramMap);
+        List<ResWarn> logs = resWarnDao.selectAll(paramMap);
         PageInfo pageInfo = new PageInfo(logs);
         long total = pageInfo.getTotal();
         respDto.setCount(total);

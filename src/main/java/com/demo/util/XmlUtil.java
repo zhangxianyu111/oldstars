@@ -1,6 +1,6 @@
 package com.demo.util;
 
-import org.dom4j.Attribute;
+import com.demo.common.Statistics;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.jdom2.Document;
@@ -9,7 +9,11 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.*;
 
@@ -231,13 +235,54 @@ public class XmlUtil{
     }
 
 
+    /**
+     * 将XML转为指定的POJO
+     * @param clazz
+     * @param xmlStr
+     * @return
+     * @throws Exception
+     */
+    public static Object xmlStrToOject(Class<?> clazz, String xmlStr) throws Exception {
+        Object xmlObject = null;
+        Reader reader = null;
+        JAXBContext context = JAXBContext.newInstance(clazz);
 
+        // XML 转为对象的接口
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+
+        reader = new StringReader(xmlStr);
+        xmlObject = unmarshaller.unmarshal(reader);
+
+        if (null != reader) {
+            reader.close();
+        }
+
+        return xmlObject;
+    }
+
+    public static Statistics getStatistics(String pathName) throws Exception {
+        // 读取XML文件
+        Resource resource = new ClassPathResource(pathName);
+        BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), "utf-8"));
+        StringBuffer buffer = new StringBuffer();
+        String line = "";
+
+        while ((line = br.readLine()) !=null) {
+            buffer.append(line);
+        }
+
+        br.close();
+
+        // XML转为Java对象
+        Statistics statistics = (Statistics)xmlStrToOject(Statistics.class, buffer.toString());
+        return statistics;
+    }
 
 
 
 
     public static void main(String[] args) throws Exception{
-        //JDOM2XMLReader("/config/pointer.xml","10000");
-        xmlToMap("C:\\Users\\Administrator.SKY-20190324EMI\\Desktop\\新vpn\\demo\\src\\main\\resources\\config\\warn.xml");
+        Statistics s = getStatistics("config/warn.xml");
+        System.out.println(s);
     }
 }

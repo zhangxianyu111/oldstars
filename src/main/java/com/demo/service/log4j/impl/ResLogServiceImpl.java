@@ -1,15 +1,16 @@
 package com.demo.service.log4j.impl;
 
 import com.demo.dao.log4j.ResLogMapper;
+import com.demo.dao.log4j.ResWarnMapper;
 import com.demo.dto.response.log4j.ResLogRespDto;
 import com.demo.exception.ResLogException;
 import com.demo.pojo.log4j.ResLog;
+import com.demo.pojo.log4j.ResWarn;
 import com.demo.service.log4j.ResLogService;
 import com.demo.util.DateUtil;
 import com.demo.util.PropertiesUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,6 +31,8 @@ public class ResLogServiceImpl implements ResLogService {
 
     @Resource
     private ResLogMapper resLogDao;
+    @Resource
+    private ResWarnMapper resWarnDao;
 
     @Override
     public ResLogRespDto selectAllByPage(Map<String, Object> paramMap, ResLogRespDto respDto) {
@@ -54,6 +57,11 @@ public class ResLogServiceImpl implements ResLogService {
         Long warnCount = resLogDao.selectAllCount(paramMap);
         respDto.setErrCount(errCount == null?0L:errCount);
         respDto.setWarnCount(warnCount == null?0L:warnCount);
+        //查询未处理告警信息
+        paramMap.clear();
+        paramMap.put("warnStatus",0);
+        List<ResWarn> resLogs = resWarnDao.selectAll(paramMap);
+        respDto.setWarnList(resLogs);
         return respDto;
     }
 
@@ -82,22 +90,6 @@ public class ResLogServiceImpl implements ResLogService {
         }else{
             throw new ResLogException("查询日志失败！");
         }
-    }
-
-    @Override
-    public ResLogRespDto rankingList(Map<String,Object> paramMap,ResLogRespDto respDto) {
-        //查询错误日志数量
-        paramMap.put("logLevel","ERROR");
-        Long errCount = resLogDao.count(paramMap);
-        List<ResLog> errList = resLogDao.rankingList(paramMap);
-        paramMap.put("logLevel","WARN");
-        Long warnCount = resLogDao.count(paramMap);
-        List<ResLog> warnList = resLogDao.rankingList(paramMap);
-        respDto.setErrCount(errCount);
-        respDto.setWarnCount(warnCount);
-        respDto.setErrList(errList);
-        respDto.setWarnList(warnList);
-        return respDto;
     }
 
     public void charsetDownload(String content, HttpServletResponse response) throws IOException {

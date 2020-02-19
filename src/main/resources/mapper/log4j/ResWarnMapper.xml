@@ -10,7 +10,7 @@
         <result column="WARNSTATUS" property="warnStatus" javaType="int" jdbcType="TINYINT"/>
         <result column="WARNTIME" property="warnTime" javaType="Date" jdbcType="TIMESTAMP"/>
         <result column="HANDLEUSER" property="handleUser" javaType="String" jdbcType="VARCHAR"/>
-        <result column="HANDLETIME" property="handleTime" javaType="Date" jdbcType="DATETIME"/>
+        <result column="HANDLETIME" property="handleTime" javaType="Date" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="baseSql" >
         WARNID,WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME
@@ -80,6 +80,11 @@
     <delete id="deleteWarnExpire" >
         delete from resconfig where WARNTIME &lt; DATE_SUB(CURDATE(),INTERVAL 3 month );
     </delete>
+
+    <insert id="insert" parameterType="com.demo.pojo.log4j.ResWarn">
+        insert into reswarn  (WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME)
+        VALUES (#{warnClass},#{warnMsg},#{warnStatus},now(),#{handleUser},#{handleTime})
+    </insert>
 
 </mapper>
 

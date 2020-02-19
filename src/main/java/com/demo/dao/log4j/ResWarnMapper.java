@@ -8,11 +8,13 @@ import java.util.Map;
 
 public interface ResWarnMapper {
 
-    List<ResLog> selectAll(Map paramMap);
+    List<ResWarn> selectAll(Map paramMap);
 
     Long selectAllCount(Map paramMap);
 
     void handle(Map map);
 
     ResWarn seeWarn(Map map);
+
+    void insert(ResWarn resWarn);
 }

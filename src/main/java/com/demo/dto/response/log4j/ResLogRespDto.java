@@ -1,7 +1,7 @@
 package com.demo.dto.response.log4j;
 
 import com.demo.dto.response.BaseRespDto;
-import com.demo.pojo.log4j.ResLog;
+import com.demo.pojo.log4j.ResWarn;
 
 import java.util.List;
 
@@ -10,10 +10,8 @@ public class ResLogRespDto extends BaseRespDto {
     private Long errCount;
     //警告日志数量
     private Long warnCount;
-    //错误日志排行榜
-    private List<ResLog> errList;
-    //警告日志排行榜
-    private List<ResLog> warnList;
+    //警告日志
+    private List<ResWarn> warnList;
 
     public Long getErrCount() {
         return errCount;
@@ -31,19 +29,11 @@ public class ResLogRespDto extends BaseRespDto {
         this.warnCount = warnCount;
     }
 
-    public List<ResLog> getErrList() {
-        return errList;
-    }
-
-    public void setErrList(List<ResLog> errList) {
-        this.errList = errList;
-    }
-
-    public List<ResLog> getWarnList() {
+    public List<ResWarn> getWarnList() {
         return warnList;
     }
 
-    public void setWarnList(List<ResLog> warnList) {
+    public void setWarnList(List<ResWarn> warnList) {
         this.warnList = warnList;
     }
 
@@ -52,7 +42,6 @@ public class ResLogRespDto extends BaseRespDto {
         return "ResLogRespDto{" +
                 "errCount=" + errCount +
                 ", warnCount=" + warnCount +
-                ", errList=" + errList +
                 ", warnList=" + warnList +
                 '}';
     }

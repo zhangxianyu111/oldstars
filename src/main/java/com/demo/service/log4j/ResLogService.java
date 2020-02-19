@@ -14,5 +14,4 @@ public interface ResLogService {
 
     void downLoad(Long id,HttpServletResponse response) throws Exception;
 
-    ResLogRespDto rankingList(Map<String,Object> paramMap,ResLogRespDto respDto);
 }
