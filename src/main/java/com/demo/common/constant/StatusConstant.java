@@ -1,4 +1,4 @@
-package com.demo.common;
+package com.demo.common.constant;
 /**
  *
  * @author zje

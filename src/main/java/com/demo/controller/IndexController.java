@@ -15,7 +15,7 @@ public class IndexController {
     public String index(){
         LOGGER.info(LogBuilderUtil.getBuilder("index","跳转登录页面","")
                 .build());
-        return "index";
+        return "/index.jsp";
 
     }
 }

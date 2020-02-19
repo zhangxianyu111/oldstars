@@ -54,7 +54,7 @@
     <select id="selectAll" parameterType="map" resultMap="logResultMap">
         select
         <include refid="baseSql"/>
-        form error_log_info
+        from error_log_info
         <where>
             <if test="module != null">
                 and module like concat('%',#{module},"%")
@@ -68,7 +68,7 @@
     <select id="selectAllCount" parameterType="map" resultType="java.lang.Long">
         select
         count(1)
-        form error_log_info
+        from error_log_info
         <where>
             <if test="module != null">
                 and module like concat('%',#{module},"%")
@@ -83,4 +83,3 @@
     </delete>
 
 </mapper>
-

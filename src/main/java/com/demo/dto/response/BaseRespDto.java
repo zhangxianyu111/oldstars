@@ -1,7 +1,7 @@
 package com.demo.dto.response;
 
 import com.alibaba.fastjson.JSONObject;
-import com.demo.common.StatusConstant;
+import com.demo.common.constant.StatusConstant;
 
 import java.util.List;
 /**

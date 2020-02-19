@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" 
-	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
 			            http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 			            http://www.springframework.org/schema/context
 			            http://www.springframework.org/schema/context/spring-context-4.2.xsd
@@ -14,23 +14,23 @@
 			            http://mybatis.org/schema/mybatis-spring 
 			            http://mybatis.org/schema/mybatis-spring.xsd ">
     <import resource="spring-quartz.xml"/>
-	
-	<!-- 扫描com.evenmo包下面的java文件，有Spring的相关注解的类，则把这些类注册为Spring的bean -->
+
+    <!-- 扫描com.evenmo包下面的java文件，有Spring的相关注解的类，则把这些类注册为Spring的bean -->
     <context:component-scan base-package="com.demo"/>
 
-	 <!-- mybatis:scan会将com.evenmo.mapper包里的所有接口当作mapper配置，之后可以自动引入mapper类-->  
+    <!-- mybatis:scan会将com.evenmo.mapper包里的所有接口当作mapper配置，之后可以自动引入mapper类-->
     <mybatis:scan base-package="com.demo.dao"/>
 
     <!--spring容器工具类  -->
     <bean id="springContextHolder" class="com.demo.util.SpringContextHolder"/>
 
     <!-- 使用PropertyOverrideConfigurer后处理器加载数据源参数 -->
-	<!-- <context:property-override location="classpath:db.properties"/> -->
-	<!-- 指定spring读取db.properties配置 -->
+    <!-- <context:property-override location="classpath:db.properties"/> -->
+    <!-- 指定spring读取db.properties配置 -->
     <context:property-placeholder location="classpath:db.properties"  />
 
-	<!-- 配置c3p0数据源 -->
-	<!-- 需要数据源 C3P0 -->
+    <!-- 配置c3p0数据源 -->
+    <!-- 需要数据源 C3P0 -->
     <!-- <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="${dataSource.driverClass}"></property>
         <property name="jdbcUrl" value="${dataSource.jdbcUrl}"></property>
@@ -38,7 +38,7 @@
         <property name="user" value="${dataSource.user}"></property>
     </bean> -->
 
-	<!-- 配置 druid 数据源 -->
+    <!-- 配置 druid 数据源 -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- 基本属性 url、user、password、driverClass -->
         <property name="username" value="${dataSource.user}" />
@@ -46,11 +46,11 @@
         <property name="driverClassName" value="${dataSource.driverClass}" />
         <property name="url" value="${dataSource.jdbcUrl}" />
     </bean>
-	<!-- 配置SqlSessionFactory，org.mybatis.spring.SqlSessionFactoryBean是Mybatis社区开发用于整合Spring的bean,并同时设置mybatis配套的分页插件PageHelper -->
-	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"
-	    p:dataSource-ref="dataSource">
-	    <!-- mybaytis配置文件，需要在mybtatis中做进一步设置时 -->
-	    <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    <!-- 配置SqlSessionFactory，org.mybatis.spring.SqlSessionFactoryBean是Mybatis社区开发用于整合Spring的bean,并同时设置mybatis配套的分页插件PageHelper -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"
+          p:dataSource-ref="dataSource">
+        <!-- mybaytis配置文件，需要在mybtatis中做进一步设置时 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
         <!-- mybatis-xml配置 -->
         <property name="mapperLocations" value="classpath:mapper/*.xml"/>
         <!-- 传入PageHelper 分页插件 -->
@@ -59,29 +59,37 @@
                 <!-- 传入插件的对象 -->
                 <!-- 最新版版本写法 -->
                 <bean class="com.github.pagehelper.PageInterceptor">
-                <!-- 4.1.6版本写法 -->
-                <!-- <bean class="com.github.pagehelper.PageHelper"> -->
+                    <!-- 4.1.6版本写法 -->
+                    <!-- <bean class="com.github.pagehelper.PageHelper"> -->
                     <property name="properties">
                         <props>
                             <!--数据库类型-->
                             <prop key="helperDialect">mysql</prop>
                             <!--页码超出范围自动修正-->
                             <prop key="reasonable">true</prop>
+                            <!--为了支持startPage(Object params)方法，增加了该参数来配置参数映射，用于从对象中根据属性名取值，
+                        可以配置 pageNum,pageSize,count,pageSizeZero,reasonable-->
+<!--                            params=count=countSql-->
+                            <!--支持通过Mapper接口参数来传递分页参数，默认值false，分页插件会从查询方法的参数值中，自动根据上面 params 配
+                             置的字段中取值，查找到合适的值时就会自动分页。-->
+<!--                            supportMethodsArguments=true-->
+                            <!--默认值为 false。设置为 true 时，允许在运行时根据多数据源自动识别对应方言的分页-->
+<!--                            autoRuntimeDialect=true-->
                         </props>
                     </property>
                 </bean>
             </array>
         </property>
 
-	    </bean>
-	
-	<!-- JDBC事务管理器 -->
-	<bean id="transactionManager" 
-	class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
-		 p:dataSource-ref="dataSource"/>
-	
-	<!-- 启用支持annotation注解方式事务管理 -->
-	<tx:annotation-driven transaction-manager="transactionManager"/>
+    </bean>
+
+    <!-- JDBC事务管理器 -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+          p:dataSource-ref="dataSource"/>
+
+    <!-- 启用支持annotation注解方式事务管理 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <!-- spring-quartz config -->
     <import resource="classpath:spring-quartz.xml"/>

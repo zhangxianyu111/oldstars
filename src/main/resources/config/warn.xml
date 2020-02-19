@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<config>
+  <moudle>
+    <item name="user" desc="用户" warntime="7200" warncount="15" errortime="3600" errorcount="10"></item>
+    <item name="argos" desc="argos工具" warntime="7200" warncount="15" errortime="3600" errorcount="10"></item>
+  </moudle>
+  <warnmsg>%moudlename%模块，在%stime%-%etime%内,警告数量%countsmg%,请即时查看</warnmsg>
+  <errormsg>%moudlename%模块，在%stime%-%etime%内,错误数量%countsmg%,请即时查看</errormsg>
+</config>

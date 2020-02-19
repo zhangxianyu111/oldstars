@@ -1,6 +1,6 @@
 package com.demo.service.serviceimpl;
 
-import com.demo.common.StatusConstant;
+import com.demo.common.constant.StatusConstant;
 import com.demo.dao.QrtzJobDetailsMapper;
 import com.demo.dto.response.BaseRespDto;
 import com.demo.exception.DynamicQuartzException;
@@ -9,12 +9,9 @@ import com.demo.quarz.DynamicQuartzJob;
 import com.demo.service.QrtzJobDetailsService;
 import com.demo.util.QuartzUtil;
 import com.demo.util.SpringContextHolder;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,22 +28,22 @@ import java.util.Map;
 @Service("qrtzJobDetailsService")
 @Transactional(rollbackFor=Exception.class)
 public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
-	
+
 	/** jobName 前缀*/
 	private static final String JOB_NAME_PREFIX = "jobName.";
 	/** triggerName 前缀*/
 	private static final String TRIGGER_NAME_PREFIX = "triggerName.";
 	/** jobName/triggerName 默认组 */
 	private static final String GROUP_DEFAULT = "DEFAULT";
-	
+
 	@Resource
 	private QrtzJobDetailsMapper qrtzJobDetailsMapper;
 	@Resource
-	private Scheduler scheduler; 
-	
+	private Scheduler scheduler;
+
 	@Override
 	public BaseRespDto createQrtzJobDetails(QrtzJobDetails qrtzJobDetails,BaseRespDto baseRespDto) throws Exception{
-		
+
 		// 非空校验
 		if (qrtzJobDetails == null) {
 			throw new Exception("qrtzJobDetails 为空");
@@ -71,18 +68,18 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 		JobDetail job = JobBuilder.newJob(DynamicQuartzJob.class).withIdentity(jobKey).withDescription(qrtzJobDetails.getDescription()).build();
 		TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, jobGroup);
 
-        // 构建job的触发规则 cronExpression
-		Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()  
-        		.withSchedule(CronScheduleBuilder.cronSchedule(qrtzJobDetails.getCronExpression())).build();
+		// 构建job的触发规则 cronExpression
+		Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
+				.withSchedule(CronScheduleBuilder.cronSchedule(qrtzJobDetails.getCronExpression())).build();
 
 		// 注册job和trigger信息
-        scheduler.scheduleJob(job, trigger);
+		scheduler.scheduleJob(job, trigger);
 		baseRespDto.setCode(StatusConstant.SUCCESS);
 		baseRespDto.setMsg("创建定时成功!");
 		return baseRespDto;
 	}
 
-	
+
 	@Override
 	public Map<String, Object> updateQrtzJobDetails(QrtzJobDetails qrtzJobDetails) throws SchedulerException{
 		Map<String, Object> resultMap = new HashMap<>();
@@ -101,7 +98,7 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 			triggerKey = trigger.getKey();
 		}
 		Trigger newTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
-              .withSchedule(CronScheduleBuilder.cronSchedule(qrtzJobDetails.getCronExpression())).build();
+				.withSchedule(CronScheduleBuilder.cronSchedule(qrtzJobDetails.getCronExpression())).build();
 		scheduler.rescheduleJob(newTrigger.getKey(), newTrigger);
 		resultMap.put("success",true);
 		resultMap.put("msg","更新成功！");
@@ -117,7 +114,7 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 		baseRespDto.setMsg("删除成功！");
 		return baseRespDto;
 	}
-	
+
 	@Override
 	public QrtzJobDetails findQrtzJobDetailsByPrimaryKey(String id) {
 		return this.qrtzJobDetailsMapper.selectByPrimaryKey(id);
@@ -147,7 +144,7 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 	public List<Map<String, Object>> findMapList(QrtzJobDetails qrtzJobDetails) {
 		return this.qrtzJobDetailsMapper.selectMapList(qrtzJobDetails);
 	}
-	
+
 	@Override
 	public List<QrtzJobDetails> findList(QrtzJobDetails qrtzJobDetails){
 		return this.qrtzJobDetailsMapper.selectList(qrtzJobDetails);
@@ -189,10 +186,10 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 		if (! SpringContextHolder.existBeanAndMethod(beanName, methodName, null)) {
 			throw new DynamicQuartzException("服务方法不存在");
 		}
-		
+
 
 	}
-	
+
 
 
 

@@ -10,10 +10,11 @@
         <result column="CREATETIME" property="createTime" javaType="Date" jdbcType="TIMESTAMP"/>
         <result column="LOGLEVEL" property="logLevel" javaType="String" jdbcType="VARCHAR"/>
         <result column="LOGLINE" property="logLine" javaType="String" jdbcType="VARCHAR"/>
+        <result column="EXCEPTION" property="logException" javaType="String" jdbcType="VARCHAR"/>
         <result column="MSG" property="logMsg" javaType="String" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="baseSql" >
-        LOGID,CLASS,METHOD,CREATETIME,LOGLEVEL,LOGLINE,MSG
+        LOGID,CLASS,METHOD,CREATETIME,LOGLEVEL,LOGLINE,EXCEPTION,MSG
     </sql>
     <select id="selectAll" parameterType="map" resultMap="logResultMap">
         select
@@ -34,9 +35,6 @@
             </if>
         </where>
         order by CREATETIME desc
-        <if test="page != null">
-            #{page}
-        </if>
     </select>
     <select id="selectAllCount" parameterType="map" resultType="java.lang.Long">
         select
@@ -49,7 +47,46 @@
             <if test="logLevel != null">
                 and LOGLEVEL = #{logLevel}
             </if>
+            <if test="sTime != null">
+                and CREATETIME <![CDATA[ >= ]]> #{sTime}
+            </if>
+            <if test="eTime != null">
+                and CREATETIME <![CDATA[ <= ]]> #{eTime}
+            </if>
         </where>
+    </select>
+    <select id="count" parameterType="map" resultType="java.lang.Long">
+        select
+        count(1)
+        from reslog
+        <where>
+            <if test="logLevel != null">
+                and LOGLEVEL = #{logLevel}
+            </if>
+            <if test="sTime != null">
+                and CREATETIME <![CDATA[ >= ]]> #{sTime}
+            </if>
+            <if test="eTime != null">
+                and CREATETIME <![CDATA[ <= ]]> #{eTime}
+            </if>
+        </where>
+    </select>
+    <select id="rankingList" resultType="map" resultMap="logResultMap">
+        select
+        <include refid="baseSql"/>
+        from reslog
+        <where>
+            <if test="logLevel != null">
+                and LOGLEVEL = #{logLevel}
+            </if>
+            <if test="sTime != null">
+                and CREATETIME <![CDATA[ >= ]]> #{sTime}
+            </if>
+            <if test="eTime != null">
+                and CREATETIME <![CDATA[ <= ]]> #{eTime}
+            </if>
+        </where>
+        group by CLASS order by CREATETIME desc
     </select>
     <select id="selectById" parameterType="java.lang.Long" resultMap="logResultMap">
         select
@@ -69,4 +106,3 @@
     </delete>
 
 </mapper>
-

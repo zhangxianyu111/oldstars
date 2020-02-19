@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.dao.log4j.ResWarnMapper">
+    <resultMap id="warnResultMap" type="com.demo.pojo.log4j.ResWarn">
+        <id column="WARNID" property="warnId" javaType="Long" jdbcType="BIGINT"/>
+        <result column="WARNCLASS" property="warnClass" javaType="String" jdbcType="VARCHAR"/>
+        <result column="WARNMSG" property="warnMsg" javaType="String" jdbcType="VARCHAR"/>
+        <result column="WARNSTATUS" property="warnStatus" javaType="int" jdbcType="TINYINT"/>
+        <result column="WARNTIME" property="warnTime" javaType="Date" jdbcType="TIMESTAMP"/>
+        <result column="HANDLEUSER" property="handleUser" javaType="String" jdbcType="VARCHAR"/>
+        <result column="HANDLETIME" property="handleTime" javaType="Date" jdbcType="DATETIME"/>
+    </resultMap>
+    <sql id="baseSql" >
+        WARNID,WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME
+    </sql>
+    <select id="selectAll" parameterType="map" resultMap="warnResultMap">
+        select
+        <include refid="baseSql"/>
+        from reswarn
+        <where>
+            <if test="warnClass != null">
+                and WARNCLASS = #{warnClass}
+            </if>
+            <if test="warnStatus != null">
+                and WARNSTATUS = #{warnStatus}
+            </if>
+            <if test="sTime != null">
+                and WARNTIME <![CDATA[ >= ]]> #{sTime}
+            </if>
+            <if test="eTime != null">
+                and WARNTIME <![CDATA[ <= ]]> #{eTime}
+            </if>
+        </where>
+        order by WARNTIME desc
+    </select>
+    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long">
+        select
+        count(1)
+        from reswarn
+        <where>
+            <if test="warnClass != null">
+                and WARNCLASS = #{warnClass}
+            </if>
+            <if test="warnStatus != null">
+                and WARNSTATUS = #{warnStatus}
+            </if>
+            <if test="sTime != null">
+                and WARNTIME <![CDATA[ >= ]]> #{sTime}
+            </if>
+            <if test="eTime != null">
+                and WARNTIME <![CDATA[ <= ]]> #{eTime}
+            </if>
+        </where>
+    </select>
+    <update id="handle" parameterType="map" >
+        update reswarn set
+        WARNSTATUS = #{warnStatus},
+        WARNMSG = #{content},
+        HANDLEUSER = #{handleUser},
+        HANDLETIME = now()
+        <where>
+            <if test="id != null and id != ''">
+                id = #{id}
+            </if>
+            <if test="ids != null and ids != ''">
+                ids in (#{ids})
+            </if>
+        </where>
+
+    </update>
+    <select id="seeWarn" parameterType="map" resultMap="warnResultMap">
+        select
+        <include refid="baseSql"/>
+        from reswarn
+        where WARNID = #{warnId}
+    </select>
+
+    <delete id="deleteWarnExpire" >
+        delete from resconfig where WARNTIME &lt; DATE_SUB(CURDATE(),INTERVAL 3 month );
+    </delete>
+
+</mapper>

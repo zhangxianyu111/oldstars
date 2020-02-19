@@ -1,25 +1,18 @@
 package com.demo.util;
 
-import com.demo.quarz.LoggerDBTimer;
+import org.dom4j.Attribute;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
+import java.util.*;
+
 /**
  *
  * @author zje
@@ -58,8 +51,8 @@ public class XmlUtil{
             /*URL uri = PropertiesUtil.class.getResource("/");
             File file = new File(uri.toURI());
             return file.getAbsolutePath() + xmlPath;*/
-            String filePath=System.getProperty("user.dir");
-            return filePath+"\\src\\main\\resources\\config\\pointer.xml";
+        String filePath=System.getProperty("user.dir");
+        return filePath+"\\src\\main\\resources\\config\\pointer.xml";
         /*}catch (URISyntaxException ue){
             //logger.error("读取URI地址失败",ue);
         }
@@ -68,7 +61,7 @@ public class XmlUtil{
     }
     public static void JDOM2XMLReader(String xmlPath,String value){
         Document doc = getDocument(xmlPath);
-       // String pathname = getPath(xmlPath);
+        // String pathname = getPath(xmlPath);
         String filePath=System.getProperty("user.dir");
         String pathname = filePath+"\\src\\main\\resources\\config\\pointer.xml";
         Element foo = doc.getRootElement();
@@ -100,7 +93,151 @@ public class XmlUtil{
         }
     }
 
-    public static void main(String[] args){
-        JDOM2XMLReader("/config/pointer.xml","10000");
+    /**
+     * 将xml文件转换成map
+     * @param pathName
+     * @throws DocumentException
+     */
+    public static void xmlToMap(String pathName) throws DocumentException {
+        Map<String,Object> map = new HashMap<String,Object>();
+
+        //创建读取xml的对象
+        SAXReader reader = new SAXReader();
+        //指定读取的文件
+        org.dom4j.Document doc = reader.read(new File(pathName));
+
+        //读取根节点
+        org.dom4j.Element root = doc.getRootElement();
+
+        //进行循环遍历，添加到集合
+        //获取迭代器，迭代元素
+        for(Iterator iterator = root.elementIterator(); iterator.hasNext();){
+
+            //迭代根节点中的所有子元素
+            org.dom4j.Element e = (org.dom4j.Element) iterator.next();
+            //System.out.println(e.getName());
+
+            //获取该元素下的所有子元素，并放入list集合中
+            List list = e.elements();
+            //System.out.println(list.size());
+
+            //判断该节点下是否还有子节点
+            if(list.size()>0){
+                //如果该节点下还有子节点，则调用方法，继续进行解析
+                map.put(e.getName(),returnMap(e));
+            }else {
+                map.put(e.getName(),e.getText());
+            }
+        }
+        //遍历出map集合中的元素
+        Set<String> keySet = map.keySet();
+        for(String s : keySet){
+            System.out.println(s+"  :  "+map.get(s));
+        }
+    }
+
+
+
+
+
+
+    //如果节点下还有节点，则调用该方法，继续进行解析
+    public static Map returnMap(org.dom4j.Element e){
+
+        Map map = new HashMap();
+        //将该节点下所有子元素读进来，并放在list集合中
+        List list = e.elements();
+
+        //如果还有子元素，则继续进行解析
+        if(list.size()>0){
+            for(int i = 0;i<list.size();i++){
+                //循环获取集合中的元素
+                org.dom4j.Element ele = (org.dom4j.Element) list.get(i);
+                List listMapList = new ArrayList();
+
+                //如果该元素下，仍有子节点，则用递归进行进一步解析
+                if(ele.elements().size()>0){
+                    //调用自身会返回一个Map集合
+                    Map m = returnMap(ele);
+                    //判断map中是否已经有该元素,!=null,则代表该key已经存在
+                    if(map.get(ele.getName()) != null){
+                        //如果已经存在，获取该对象
+                        Object obj = map.get(ele.getName());
+                        //判断该元素是不是一个list集合，如果不是一个list集合，则直接添加到listMapList集合中
+                        if(!obj.getClass().getName().equals("java.util.ArrayList")){
+                            listMapList.add(obj);
+                            listMapList.add(m);//将返回的map集合也放进集合中
+                        }//如果该元素是一个list集合，则将该元素赋值给listMapList
+                        if(obj.getClass().getName().equals("java.util.ArrayList")){
+                            listMapList = (List) obj;
+                            listMapList.add(m);
+                        }
+                        //将该元素添加到map集合中去
+                        map.put(ele.getName(),listMapList);
+                    }else{    //如果该元素还未存在map集合中，则直接添加到map中
+                        map.put(ele.getName(),m);
+
+                    }
+                }else{    //如果该节点下，没有子节元素了，
+                    if(map.get(ele.getName()) !=null){
+                        Object obj = map.get(ele.getName());
+                        if(!obj.getClass().getName().equals("java.util.ArrayList")){
+                            listMapList.add(obj);
+                            listMapList.add(ele.getText());
+                        }
+                        if(obj.getClass().getName().equals("java.util.ArrayList")){
+                            listMapList = (List) obj;
+                            listMapList.add(ele.getText());
+                        }
+                        map.put(ele.getName(), listMapList);
+                    }else{
+                        map.put(ele.getName(), ele.getText());
+                    }
+                }
+            }
+        }else{
+            map.put(e.getName(), e.getText());
+
+        }
+        return map;
+    }
+
+
+    public static List<Map<String, String>> xml2list(String xml,String node) {
+        xml =xml.replace("\n","").replace(" ","");
+        List<Map<String, String>> resList = new ArrayList();
+        SAXReader reader = new SAXReader();
+        org.dom4j.Document document = null;
+        try {
+            document = reader.read(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+            org.dom4j.Element root = document.getRootElement();
+            org.dom4j.Element dataList = (org.dom4j.Element) root.selectSingleNode(node);
+            if(null==dataList){
+                return new ArrayList();
+            }
+            Iterator it = dataList.elementIterator();
+            while (it.hasNext()) {
+                Element element = (Element) it.next();
+                Map<String, String> temMap = new HashMap<String, String>();
+                temMap.put(element.getQualifiedName(), element.getText());
+                resList.add(temMap);
+            }
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return resList;
+    }
+
+
+
+
+
+
+
+    public static void main(String[] args) throws Exception{
+        //JDOM2XMLReader("/config/pointer.xml","10000");
+        xmlToMap("C:\\Users\\Administrator.SKY-20190324EMI\\Desktop\\新vpn\\demo\\src\\main\\resources\\config\\warn.xml");
     }
 }

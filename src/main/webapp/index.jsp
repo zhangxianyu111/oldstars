@@ -61,7 +61,9 @@
                         <i class="layui-icon">&#xe612;</i>
                         <em>统计分析</em>
                     </a>
-
+                    <dl class="layui-nav-child">
+                        <dd><a href="/statistics/toStatisticsIndex">日志统计</a></dd>
+                    </dl>
                 </li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">
@@ -73,10 +75,7 @@
                         <dd><a href="/logLevel/level/toList">日志级别管理</a></dd>
                     </dl>
                 </li>
-
-
             </ul>
-
         </div>
     </div>
 

@@ -1,7 +1,7 @@
 package com.demo.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.demo.common.StatusConstant;
+import com.demo.common.constant.StatusConstant;
 import com.demo.dto.response.BaseRespDto;
 import com.demo.quarz.LoggerDBTimer;
 import com.demo.service.LogService;
