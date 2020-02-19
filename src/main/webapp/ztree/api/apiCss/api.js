@@ -236,7 +236,7 @@ var apiContent = {
 
 		var function_nodes =[
 			{id:1, pId:0, t:"$.fn.zTree", name:"$.fn.zTree : {", open:true},
-			{id:11, pId:1, t:"init", name:"init (obj, zSetting, zNodes)", iconSkin:"core", showAPI:true},
+			{id:11, pId:1, t:"BaseJqueryJs.js", name:"init (obj, zSetting, zNodes)", iconSkin:"core", showAPI:true},
 			{id:12, pId:1, t:"getZTreeObj", name:"getZTreeObj (treeId)", iconSkin:"core", showAPI:true},
 			{id:14, pId:1, t:"destroy", name:"destroy (treeId)", iconSkin:"core", showAPI:true},
 			{id:13, pId:1, t:"_z", name:"_z : {tools, view, event, data}", iconSkin:"core", showAPI:true},

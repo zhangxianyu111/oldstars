@@ -116,7 +116,7 @@ public class LoggerDBTimer {
                         RandomAccessFile randomFile = new RandomAccessFile(logFile, "rw");
 
                         //获取RandomAccessFile对象文件指针的位置，初始位置是0
-                        System.out.println("RandomAccessFile文件指针的初始位置:" + pointer);
+                        System.out.println(logFile.getName()+"文件指针的初始位置:" + pointer);
 
                         randomFile.seek(pointer);//移动文件指针位置
 

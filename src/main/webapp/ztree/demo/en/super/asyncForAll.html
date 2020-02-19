@@ -56,7 +56,7 @@
 			}
 
 			if (curAsyncCount <= 0) {
-				if (curStatus != "init" && curStatus != "") {
+				if (curStatus != "jsBase.js" && curStatus != "") {
 					$("#demoMsg").text((curStatus == "expand") ? demoMsg.expandAllOver : demoMsg.asyncAllOver);
 					asyncForAll = true;
 				}
@@ -73,7 +73,7 @@
 			}
 		}
 
-		var curStatus = "init", curAsyncCount = 0, asyncForAll = false,
+		var curStatus = "jsBase.js", curAsyncCount = 0, asyncForAll = false,
 		goAsync = false;
 		function expandAll() {
 			if (!check()) {

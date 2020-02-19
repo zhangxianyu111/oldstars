@@ -1,5 +1,6 @@
 package com.demo.dto.request.log4j;
 
+import com.demo.dto.request.BaseReqDto;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -50,20 +51,20 @@ public class ResLogReqDto extends BaseReqDto {
     public Map getMap(){
         Map<String,Object> paramMap = new HashMap<>();
         if (StringUtils.isNotBlank(this.logClass) &&
-        StringUtils.isNotBlank(this.logClass.trim())){
-            paramMap.put("logClass",this.logClass);
+                StringUtils.isNotBlank(this.logClass.trim())){
+            paramMap.put("logClass",this.logClass.trim());
         }
         if (StringUtils.isNotBlank(this.logLevel) &&
-        StringUtils.isNotBlank(this.logLevel.trim())){
-            paramMap.put("logClass",this.logLevel);
+                StringUtils.isNotBlank(this.logLevel.trim())){
+            paramMap.put("logClass",this.logLevel.trim());
         }
         if (StringUtils.isNotBlank(this.sTime) &&
                 StringUtils.isNotBlank(this.sTime.trim())){
-            paramMap.put("createTime",this.sTime+" 00:00:00");
+            paramMap.put("createTime",this.sTime.trim()+" 00:00:00");
         }
         if (StringUtils.isNotBlank(this.eTime) &&
                 StringUtils.isNotBlank(this.eTime.trim())){
-            paramMap.put("createTime",this.eTime+" 23:59:59");
+            paramMap.put("createTime",this.eTime.trim()+" 23:59:59");
         }
         paramMap.put("page",this.getPage());
         paramMap.put("limit",this.getLimit());

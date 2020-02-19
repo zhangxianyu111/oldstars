@@ -3,15 +3,7 @@ package com.demo.pojo.log4j;
 import java.util.Date;
 
 public class ResLog {
-    /**
-     * `LOGID` int(20) NOT NULL AUTO_INCREMENT,
-     *   `CLASS` varchar(200) DEFAULT NULL,
-     *   `METHOD` varchar(100) DEFAULT NULL,
-     *   `CREATETIME` date DEFAULT NULL,
-     *   `LOGLEVEL` varchar(50) DEFAULT NULL,
-     *   `LOGLINE` varchar(255) DEFAULT NULL,
-     *   `MSG` varchar(4000) DEFAULT NULL,
-     */
+
     private Long logId;
 
     private String logClass;
@@ -23,6 +15,8 @@ public class ResLog {
     private String logLevel;
 
     private String logLine;
+
+    private String logException;
 
     private String logMsg;
 
@@ -77,6 +71,14 @@ public class ResLog {
         this.logLine = logLine;
     }
 
+    public String getLogException() {
+        return logException;
+    }
+
+    public void setLogException(String logException) {
+        this.logException = logException;
+    }
+
     public String getLogMsg() {
         return logMsg;
     }
@@ -102,6 +104,7 @@ public class ResLog {
                 ", createTime=" + createTime +
                 ", logLevel='" + logLevel + '\'' +
                 ", logLine='" + logLine + '\'' +
+                ", logException='" + logException + '\'' +
                 ", logMsg='" + logMsg + '\'' +
                 ", path='" + path + '\'' +
                 '}';
