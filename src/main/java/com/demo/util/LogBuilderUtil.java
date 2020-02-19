@@ -1,6 +1,6 @@
 package com.demo.util;
 
-import com.demo.common.StatusConstant;
+import com.demo.common.constant.StatusConstant;
 import com.demo.dto.response.BaseRespDto;
 import org.slf4j.Logger;
 

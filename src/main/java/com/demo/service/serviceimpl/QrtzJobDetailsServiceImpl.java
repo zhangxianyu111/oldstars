@@ -1,6 +1,6 @@
 package com.demo.service.serviceimpl;
 
-import com.demo.common.StatusConstant;
+import com.demo.common.constant.StatusConstant;
 import com.demo.dao.QrtzJobDetailsMapper;
 import com.demo.dto.response.BaseRespDto;
 import com.demo.exception.DynamicQuartzException;
@@ -9,12 +9,9 @@ import com.demo.quarz.DynamicQuartzJob;
 import com.demo.service.QrtzJobDetailsService;
 import com.demo.util.QuartzUtil;
 import com.demo.util.SpringContextHolder;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

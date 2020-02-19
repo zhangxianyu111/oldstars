@@ -1,6 +1,6 @@
 package com.demo.service.log4j.impl;
 
-import com.demo.common.StatusConstant;
+import com.demo.common.constant.StatusConstant;
 import com.demo.dao.log4j.ResWarnMapper;
 import com.demo.dto.response.log4j.ResWarnRespDto;
 import com.demo.pojo.log4j.ResLog;

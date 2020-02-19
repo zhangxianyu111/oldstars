@@ -10,10 +10,11 @@
         <result column="CREATETIME" property="createTime" javaType="Date" jdbcType="TIMESTAMP"/>
         <result column="LOGLEVEL" property="logLevel" javaType="String" jdbcType="VARCHAR"/>
         <result column="LOGLINE" property="logLine" javaType="String" jdbcType="VARCHAR"/>
+        <result column="EXCEPTION" property="logException" javaType="String" jdbcType="VARCHAR"/>
         <result column="MSG" property="logMsg" javaType="String" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="baseSql" >
-        LOGID,CLASS,METHOD,CREATETIME,LOGLEVEL,LOGLINE,MSG
+        LOGID,CLASS,METHOD,CREATETIME,LOGLEVEL,LOGLINE,EXCEPTION,MSG
     </sql>
     <select id="selectAll" parameterType="map" resultMap="logResultMap">
         select

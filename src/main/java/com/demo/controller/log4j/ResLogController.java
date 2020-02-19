@@ -1,13 +1,13 @@
 package com.demo.controller.log4j;
 
-import com.demo.common.StatusConstant;
+import com.demo.common.constant.StatusConstant;
 import com.demo.dto.request.log4j.ResLogReqDto;
 import com.demo.dto.response.BaseRespDto;
 import com.demo.dto.response.log4j.ResLogRespDto;
 import com.demo.service.log4j.ResLogService;
-import com.demo.util.ExceptionUtil;
 import com.demo.util.LogBuilderUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -36,6 +36,7 @@ public class ResLogController {
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LOGGER.info(LogBuilderUtil.getBuilder("selectLogs","查询日志信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){
+            MDC.put("exception", e.getClass().getName());;
             LogBuilderUtil.failToLog(baseRespDto, e,LOGGER);
         }
         return baseRespDto;

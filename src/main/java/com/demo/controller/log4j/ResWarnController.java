@@ -1,12 +1,10 @@
 package com.demo.controller.log4j;
 
-import com.demo.common.StatusConstant;
+import com.demo.common.constant.StatusConstant;
 import com.demo.dto.request.log4j.ResWarnReqDto;
 import com.demo.dto.response.BaseRespDto;
-import com.demo.dto.response.log4j.ResLogRespDto;
 import com.demo.dto.response.log4j.ResWarnRespDto;
 import com.demo.service.log4j.ResWarnService;
-import com.demo.util.ExceptionUtil;
 import com.demo.util.LogBuilderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
