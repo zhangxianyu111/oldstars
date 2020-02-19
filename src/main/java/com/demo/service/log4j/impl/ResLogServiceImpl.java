@@ -1,14 +1,15 @@
 package com.demo.service.log4j.impl;
 
 import com.demo.dao.log4j.ResLogMapper;
-import com.demo.dto.response.BaseRespDto;
+import com.demo.dto.response.log4j.ResLogRespDto;
 import com.demo.exception.ResLogException;
-import com.demo.pojo.ErrorLogInfo;
 import com.demo.pojo.log4j.ResLog;
 import com.demo.service.log4j.ResLogService;
 import com.demo.util.DateUtil;
 import com.demo.util.PropertiesUtil;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -31,9 +32,7 @@ public class ResLogServiceImpl implements ResLogService {
     private ResLogMapper resLogDao;
 
     @Override
-    public BaseRespDto selectAllByPage(Map<String, Object> paramMap, BaseRespDto respDto) {
-        Long count = resLogDao.selectAllCount(paramMap);
-        respDto.setCount(count);
+    public ResLogRespDto selectAllByPage(Map<String, Object> paramMap, ResLogRespDto respDto) {
         PageHelper.startPage(Integer.valueOf(paramMap.get("page").toString()),Integer.valueOf(paramMap.get("limit").toString()));
         List<ResLog> logs = resLogDao.selectAll(paramMap);
         //获取文件路径
@@ -44,7 +43,17 @@ public class ResLogServiceImpl implements ResLogService {
                 log.setPath(rootPath+"."+DateUtil.parseDateToStr(log.getCreateTime(),DateUtil.DATE_FORMAT_YYYY_MM_DD));
             }
         }
-        respDto.setData(logs);
+        PageInfo pageInfo = new PageInfo(logs);
+        long total = pageInfo.getTotal();
+        respDto.setCount(total);
+        respDto.setSingleData(pageInfo);
+        //查询error 和 warn 数量
+        paramMap.put("logLevel","ERROR");
+        Long errCount = resLogDao.selectAllCount(paramMap);
+        paramMap.put("logLevel","WARN");
+        Long warnCount = resLogDao.selectAllCount(paramMap);
+        respDto.setErrCount(errCount == null?0L:errCount);
+        respDto.setWarnCount(warnCount == null?0L:warnCount);
         return respDto;
     }
 
@@ -73,6 +82,22 @@ public class ResLogServiceImpl implements ResLogService {
         }else{
             throw new ResLogException("查询日志失败！");
         }
+    }
+
+    @Override
+    public ResLogRespDto rankingList(Map<String,Object> paramMap,ResLogRespDto respDto) {
+        //查询错误日志数量
+        paramMap.put("logLevel","ERROR");
+        Long errCount = resLogDao.count(paramMap);
+        List<ResLog> errList = resLogDao.rankingList(paramMap);
+        paramMap.put("logLevel","WARN");
+        Long warnCount = resLogDao.count(paramMap);
+        List<ResLog> warnList = resLogDao.rankingList(paramMap);
+        respDto.setErrCount(errCount);
+        respDto.setWarnCount(warnCount);
+        respDto.setErrList(errList);
+        respDto.setWarnList(warnList);
+        return respDto;
     }
 
     public void charsetDownload(String content, HttpServletResponse response) throws IOException {

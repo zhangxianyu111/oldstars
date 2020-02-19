@@ -12,6 +12,10 @@ public class ResWarn {
     private int warnStatus;
     //告警时间
     private Date warnTime;
+    //处理人
+    private String handleUser;
+    //处理时间
+    private Date handleTime;
 
     public Long getWarnId() {
         return warnId;
@@ -53,6 +57,22 @@ public class ResWarn {
         this.warnTime = warnTime;
     }
 
+    public String getHandleUser() {
+        return handleUser;
+    }
+
+    public void setHandleUser(String handleUser) {
+        this.handleUser = handleUser;
+    }
+
+    public Date getHandleTime() {
+        return handleTime;
+    }
+
+    public void setHandleTime(Date handleTime) {
+        this.handleTime = handleTime;
+    }
+
     @Override
     public String toString() {
         return "ResWarn{" +
@@ -61,6 +81,8 @@ public class ResWarn {
                 ", warnMsg='" + warnMsg + '\'' +
                 ", warnStatus=" + warnStatus +
                 ", warnTime=" + warnTime +
+                ", handleUser='" + handleUser + '\'' +
+                ", handleTime=" + handleTime +
                 '}';
     }
 }

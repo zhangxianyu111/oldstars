@@ -1,4 +1,9 @@
 package com.demo.util;
+
+import com.demo.common.StatusConstant;
+import com.demo.dto.response.BaseRespDto;
+import org.slf4j.Logger;
+
 /**
  *
  * @author zje
@@ -25,6 +30,14 @@ public class LogBuilderUtil {
 
     public static Builder getBuilder(String methodName, String bussinessDesc, String stepDesc) {
         return new Builder(null, methodName, bussinessDesc, stepDesc, null, null);
+    }
+
+    public static void failToLog(BaseRespDto baseRespDto, Exception e, Logger LOGGER) {
+        if (baseRespDto != null){
+            baseRespDto.setCode(StatusConstant.FAIL);
+        }
+        String eStr = ExceptionUtil.getTrace(e);
+        LOGGER.error(eStr,e);
     }
 
     public static class Builder {
@@ -175,6 +188,8 @@ public class LogBuilderUtil {
         public void setMethodName(String methodName) {
             this.methodName = methodName;
         }
+
+
     }
 
 }

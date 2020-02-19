@@ -1,4 +1,4 @@
-package com.demo.dto.request.log4j;
+package com.demo.dto.request;
 
 public class BaseReqDto {
     private Integer page = 1;
