@@ -165,7 +165,7 @@ public class LoggerDBTimer {
                                 continue;
                             }
                             //获取一行中的时间
-                            if(str.contains("ERROR")){
+                            if(str.contains("] ERROR [") || str.contains("] WARN  [") || str.contains("[WARN]")){
                                 logInfo = new ErrorLogInfo();
                                 logInfo.setLogDate(DateUtil.parseDate(str.substring(0,23)));
                                 logInfo.setModule(StringUtil.regularExpression(str));

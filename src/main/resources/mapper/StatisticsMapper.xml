@@ -65,20 +65,52 @@
         </where>
         order by log_date desc
     </select>
-    <select id="selectAllLogTitlesByTime" parameterType="map" resultType="java.lang.String">
+    <select id="selectAllExceptionTypesByTime" parameterType="map" resultType="java.util.HashMap">
         select
-        log_title
-        from error_log_info
+            TRANS as name, count as value
+        FROM(
+            select
+                *
+            FROM
+                excepdic as a
+            RIGHT JOIN(
+                select
+                    EXCEPTION AS EXCP, COUNT(EXCEPTION) as count
+                from
+                    reslog
+                <where>
+                    <if test="sTime != null">
+                        and CREATETIME <![CDATA[ >= ]]> #{sTime}
+                    </if>
+                    <if test="eTime != null">
+                        and CREATETIME <![CDATA[ <= ]]> #{eTime}
+                    </if>
+                </where>
+                GROUP BY EXCEPTION
+                ORDER BY count DESC
+                <if test="limit != null">
+                    LIMIT #{limit}
+                </if>
+            ) b
+            ON a.EXCEPTION = b.EXCP
+        ) c
+    </select>
+<!--
+    <select id="selectAllExceptionTypesByTime" parameterType="map" resultType="java.lang.String">
+        select
+        EXCEPTION
+        from reslog
         <where>
             <if test="sTime != null">
-                and log_date between #{sTime}
+                and CREATETIME <![CDATA[ >= ]]> #{sTime}
             </if>
             <if test="eTime != null">
-                and #{eTime}
+                and CREATETIME <![CDATA[ <= ]]> #{eTime}
             </if>
         </where>
     </select>
-    <select id="selectAllCountByTime" parameterType="map" resultType="java.lang.String">
+-->
+    <select id="selectAllLogLevelCountByTime" parameterType="map" resultType="java.lang.String">
         select
         LOGLEVEL
         from reslog
@@ -96,13 +128,99 @@
                 AND METHOD like concat('%',#{method},"%")
             </if>
             <if test="sTime != null">
-                and CREATETIME between #{sTime}
+                and CREATETIME <![CDATA[ >= ]]> #{sTime}
             </if>
             <if test="eTime != null">
-                and #{eTime}
+                and CREATETIME <![CDATA[ <= ]]> #{eTime}
             </if>
         </where>
     </select>
+    <select id="selectTendencyDataByTime" parameterType="map" resultType="java.util.HashMap">
+        select * from
+        <foreach collection="conditions" open="(" close=")" separator="UNION ALL " item="condition">
+            SELECT
+            DATE_FORMAT(CREATETIME, '%Y-%m-%d') AS time, LOGLEVEL as level, COUNT(LOGLEVEL) as count
+            FROM
+            reslog
+            <where>
+                <if test="condition != null">
+                    and LOGLEVEL = #{condition}
+                </if>
+                <if test="sTime != null">
+                    and CREATETIME <![CDATA[ >= ]]> #{sTime}
+                </if>
+                <if test="eTime != null">
+                    and CREATETIME <![CDATA[ <= ]]> #{eTime}
+                </if>
+                <if test="gist != null and gist == 10">
+                    GROUP BY SUBSTRING(CREATETIME,1,#{gist})
+                </if>
+            </where>
+        </foreach>
+        a  ORDER BY a.time
+    </select>
+    <select id="getRankListDataByTime" parameterType="map" resultType="java.util.HashMap">
+        <foreach collection="conditions" separator="UNION ALL " item="condition">
+            select
+                TRANS as module, LOGLEVEL AS level, count
+            FROM
+            ( select
+                *
+            FROM
+                classdic as a
+            RIGHT JOIN
+            (SELECT
+                CLASS as ecCL, LOGLEVEL, count(CLASS) count
+            FROM
+                reslog
+            <where>
+                <if test="condition != null">
+                    and LOGLEVEL = #{condition}
+                </if>
+                <if test="sTime != null">
+                    and CREATETIME <![CDATA[ >= ]]> #{sTime}
+                </if>
+                <if test="eTime != null">
+                    and CREATETIME <![CDATA[ <= ]]> #{eTime}
+                </if>
+                GROUP BY CLASS
+                <if test="limit != null">
+                    LIMIT #{limit}
+                </if>
+            </where>
+            ) b
+            ON a.CLASS = b.ecCL) c
+        </foreach>
+        ORDER BY count DESC
+    </select>
+<!--
+    <select id="getRankListDataByTime" parameterType="map" resultType="java.util.HashMap">
+        <foreach collection="conditions" separator="UNION ALL " item="condition">
+            select * from (
+            SELECT
+            CLASS as module, LOGLEVEL as level, count(CLASS) count
+            FROM
+            reslog
+            <where>
+                <if test="condition != null">
+                    and LOGLEVEL = #{condition}
+                </if>
+                <if test="sTime != null">
+                    and CREATETIME <![CDATA[ >= ]]> #{sTime}
+                </if>
+                <if test="eTime != null">
+                    and CREATETIME <![CDATA[ <= ]]> #{eTime}
+                </if>
+                GROUP BY CLASS
+                <if test="limit != null">
+                    LIMIT #{limit}
+                </if>
+            </where>
+            ) ${condition}
+        </foreach>
+        ORDER BY count DESC
+    </select>
+-->
     <select id="selectAllCount" parameterType="map" resultType="java.lang.Long">
         select
         count(1)

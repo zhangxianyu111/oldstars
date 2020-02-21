@@ -8,7 +8,12 @@ import java.util.Map;
  */
 public interface StatisticsService {
 
-    List<Map> getExceptionTypesByTime(Map<String, String> map);
+    List<Map<String, Object>> getExceptionTypesByTime(Map<String, Object> map);
+//    List<Map> getExceptionTypesByTime(Map<String, Object> map);
 
     Map<String, Integer> getTotalCountByTime(Map<String, Object> map);
+
+    List<Map<String, Object>> getTendencyDataByTime(Map<String, Object> map);
+
+    Map<String, List<Map<String, Object>>> getRankListDataByTime(Map<String, Object> map);
 }

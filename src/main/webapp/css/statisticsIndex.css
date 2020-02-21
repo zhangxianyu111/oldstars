@@ -1,0 +1,51 @@
+.error_div, .warn_div{
+    width: 110px;
+    height: 65px;
+    margin-bottom: 15px;
+    text-align: center;
+    padding-top: 5px;
+}
+.error_rank_div,.warn_rank_div{
+    float: left;
+    width: 500px;
+    height: 205px;
+    margin: 5px;
+    text-align: center;
+    padding-top: 10px;
+}
+.warn_div{
+    background-color: orange;
+}
+.error_div{
+    background-color: orangered;
+}
+.rankEle{
+    float: left;
+    width: 450px;
+    height:200px;
+}
+.slt{
+    width: 80px;
+    height: 30px;
+    border-radius: 5px;
+}
+.timeInput{
+    width: 160px;
+    height: 30px;
+    border-radius: 5px;
+}
+.serBtn{
+    width: 50px;
+    height: 30px;
+    background-color: #40AFFE;
+    border-radius: 5px;
+}
+.moreBtn{
+    width: 80px;
+    height: 30px;
+    background-color: #29adeb;
+    border-radius: 5px;
+}
+.hid{
+    visibility: hidden;
+}
