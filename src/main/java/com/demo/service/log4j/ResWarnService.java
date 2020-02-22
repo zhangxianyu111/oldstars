@@ -12,4 +12,6 @@ public interface ResWarnService {
     ResWarnRespDto handle(Map map, ResWarnRespDto baseRespDto);
 
     ResWarnRespDto seeWarn(Map map, ResWarnRespDto baseRespDto);
+
+    ResWarnRespDto selectModule(ResWarnRespDto baseRespDto);
 }

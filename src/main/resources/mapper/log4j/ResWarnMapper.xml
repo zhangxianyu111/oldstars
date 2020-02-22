@@ -11,9 +11,10 @@
         <result column="WARNTIME" property="warnTime" javaType="Date" jdbcType="TIMESTAMP"/>
         <result column="HANDLEUSER" property="handleUser" javaType="String" jdbcType="VARCHAR"/>
         <result column="HANDLETIME" property="handleTime" javaType="Date" jdbcType="TIMESTAMP"/>
+        <result column="STARTTIME" property="startTime" javaType="Date" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="baseSql" >
-        WARNID,WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME
+        WARNID,WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME,STARTTIME
     </sql>
     <select id="selectAll" parameterType="map" resultMap="warnResultMap">
         select
@@ -82,8 +83,8 @@
     </delete>
 
     <insert id="insert" parameterType="com.demo.pojo.log4j.ResWarn">
-        insert into reswarn  (WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME)
-        VALUES (#{warnClass},#{warnMsg},#{warnStatus},now(),#{handleUser},#{handleTime})
+        insert into reswarn  (WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME,STARTTIME)
+        VALUES (#{warnClass},#{warnMsg},#{warnStatus},now(),#{handleUser},#{handleTime},#{startTime})
     </insert>
 
 </mapper>

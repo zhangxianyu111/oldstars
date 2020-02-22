@@ -2,11 +2,9 @@
 
 <config>
     <moudle>
-        <item name="user" desc="用户" warntime="7200" warncount="15" errortime="3600" errorcount="10"></item>
-        <item name="argos" desc="argos工具" warntime="7200" warncount="15" errortime="3600" errorcount="10"></item>
+        <item name="com.demo.controller.log4j.ResLogController" desc="log4j日志" warntime="7200" warncount="1" errortime="3600" errorcount="1"></item>
     </moudle>
-    <warnmsg>%moudlename%模块，在%stime%-%etime%内,警告数量%countsmg%,请即时查看</warnmsg>
-    <errormsg>%moudlename%模块，在%stime%-%etime%内,错误数量%countsmg%,请即时查看</errormsg>
+    <warnmsg>%moudlename%模块%level%日志过多，在%stime%-%etime%内,(错误日志%errorcount%次，警告日志%warncount%次)</warnmsg>
 </config>
 
 

@@ -1,9 +1,12 @@
 package com.demo.service.log4j.impl;
 
+import com.demo.common.Statistics;
 import com.demo.dao.log4j.ResLogMapper;
 import com.demo.dao.log4j.ResWarnMapper;
 import com.demo.dto.response.log4j.ResLogRespDto;
+import com.demo.dto.response.log4j.dto.IndexWarnDto;
 import com.demo.exception.ResLogException;
+import com.demo.init.InitConfig;
 import com.demo.pojo.log4j.ResLog;
 import com.demo.pojo.log4j.ResWarn;
 import com.demo.service.log4j.ResLogService;
@@ -16,17 +19,15 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ResLogServiceImpl implements ResLogService {
 
     public static final String rootPath;
     static {
-        PropertiesUtil.loadProps("logpath.properties");
-        rootPath = PropertiesUtil.getProperty("log4j.appender.DailyRollingFile.File","log4j.properties");
+        //PropertiesUtil.loadProps("logpath.properties");
+        rootPath = PropertiesUtil.getProperty("logpath","logpath.properties");
     }
 
     @Resource
@@ -49,7 +50,7 @@ public class ResLogServiceImpl implements ResLogService {
         PageInfo pageInfo = new PageInfo(logs);
         long total = pageInfo.getTotal();
         respDto.setCount(total);
-        respDto.setSingleData(pageInfo);
+        respDto.setData(logs);
         //查询error 和 warn 数量
         paramMap.put("logLevel","ERROR");
         Long errCount = resLogDao.selectAllCount(paramMap);
@@ -62,6 +63,16 @@ public class ResLogServiceImpl implements ResLogService {
         paramMap.put("warnStatus",0);
         List<ResWarn> resLogs = resWarnDao.selectAll(paramMap);
         respDto.setWarnList(resLogs);
+        //查询模块
+        List<String> logClasses = new ArrayList<>();
+        Statistics statistics = InitConfig.getStatistics();
+        String warnMsg = statistics.getWarnMsg();
+        Statistics.Moudle moudle = statistics.getMoudle();
+        List<Statistics.Item> items = moudle.getItems();
+        for (Statistics.Item item : items) {
+            logClasses.add(item.getName());
+        }
+        respDto.setLogclasses(logClasses);
         return respDto;
     }
 
@@ -90,6 +101,34 @@ public class ResLogServiceImpl implements ResLogService {
         }else{
             throw new ResLogException("查询日志失败！");
         }
+    }
+
+    @Override
+    public ResLogRespDto selectModule(ResLogRespDto respDto) {
+        //查询error 和 warn 数量
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("logLevel","ERROR");
+        Long errCount = resLogDao.selectAllCount(paramMap);
+        paramMap.put("logLevel","WARN");
+        Long warnCount = resLogDao.selectAllCount(paramMap);
+        respDto.setErrCount(errCount == null?0L:errCount);
+        respDto.setWarnCount(warnCount == null?0L:warnCount);
+        //查询未处理告警信息
+        paramMap.clear();
+        paramMap.put("warnStatus",0);
+        List<ResWarn> resLogs = resWarnDao.selectAll(paramMap);
+        respDto.setWarnList(resLogs);
+        //查询模块
+        List<String> logClasses = new ArrayList<>();
+        Statistics statistics = InitConfig.getStatistics();
+        String warnMsg = statistics.getWarnMsg();
+        Statistics.Moudle moudle = statistics.getMoudle();
+        List<Statistics.Item> items = moudle.getItems();
+        for (Statistics.Item item : items) {
+            logClasses.add(item.getName());
+        }
+        respDto.setLogclasses(logClasses);
+        return respDto;
     }
 
     public void charsetDownload(String content, HttpServletResponse response) throws IOException {

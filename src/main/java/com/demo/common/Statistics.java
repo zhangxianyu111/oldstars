@@ -8,17 +8,14 @@ public class Statistics {
 
     private String warnMsg;
 
-    private String errorMsg;
-
     private Moudle moudle;
 
     public Statistics() {
 
     }
 
-    public Statistics(String warnMsg, String errorMsg, Moudle moudle) {
+    public Statistics(String warnMsg,  Moudle moudle) {
         this.warnMsg = warnMsg;
-        this.errorMsg = errorMsg;
         this.moudle = moudle;
     }
     @XmlElement(name = "warnmsg")
@@ -28,14 +25,6 @@ public class Statistics {
 
     public void setWarnMsg(String warnMsg) {
         this.warnMsg = warnMsg;
-    }
-    @XmlElement(name = "errormsg")
-    public String getErrorMsg() {
-        return errorMsg;
-    }
-
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
     }
 
     @XmlElement(name = "moudle")
@@ -51,7 +40,6 @@ public class Statistics {
     public String toString() {
         return "Statistics{" +
                 "warnMsg='" + warnMsg + '\'' +
-                ", errorMsg='" + errorMsg + '\'' +
                 ", moudle=" + moudle +
                 '}';
     }

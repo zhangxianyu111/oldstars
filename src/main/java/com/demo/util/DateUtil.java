@@ -130,7 +130,7 @@ public class DateUtil{
 
     /* ************工具方法***************   */
     public static String getSubOrAddTime(int second){
-        SimpleDateFormat sdf=new SimpleDateFormat(DATE_TIME_FORMAT_YYYYMMDDHHMISS);
+        SimpleDateFormat sdf=new SimpleDateFormat(DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS);
         Date date=new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -160,17 +160,28 @@ public class DateUtil{
     }
     /**
      * 获取当天日期
+     * yyyy-MM-dd
      */
     public static String getTodayStr(){
         Date d=new Date();
         SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD);
         return sdf.format(d);
     }
-    /***
-     * 判断字符串是否是yyyyMMddHHmmss格式
-     * @param mes 字符串
-     * @return boolean 是否是日期格式
+
+    /**
+     *
+     * @return
      */
+    public static String getNowStr() {
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS);
+        return sdf.format(d);
+    }
+        /***
+         * 判断字符串是否是yyyyMMddHHmmss格式
+         * @param mes 字符串
+         * @return boolean 是否是日期格式
+         */
     public static boolean isRqSjFormat(String mes){
         Pattern pattern = Pattern.compile(DATE_TIME_FORMAT_YYYYMMDDHHMISS_REXP);
         Matcher matcher = pattern.matcher(mes);

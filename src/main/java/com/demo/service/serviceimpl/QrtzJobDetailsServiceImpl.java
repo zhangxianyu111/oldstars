@@ -93,6 +93,10 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 			return resultMap;
 		}
 		for (Trigger trigger : list) {
+			JobKey jobKey1 = trigger.getJobKey();
+			TriggerKey key = trigger.getKey();
+			String description = trigger.getDescription();
+			JobDataMap jobDataMap = trigger.getJobDataMap();
 			//暂停触发器
 			scheduler.pauseTrigger(trigger.getKey());
 			triggerKey = trigger.getKey();
