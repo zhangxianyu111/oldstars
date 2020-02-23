@@ -14,6 +14,8 @@ public class ResWarn {
     private Date warnTime;
     //处理人
     private String handleUser;
+    //处理记录
+    private String handleMsg;
     //处理时间
     private Date handleTime;
     //扫描起始时间
@@ -59,6 +61,14 @@ public class ResWarn {
         this.startTime = startTime;
     }
 
+    public String getHandleMsg() {
+        return handleMsg;
+    }
+
+    public void setHandleMsg(String handleMsg) {
+        this.handleMsg = handleMsg;
+    }
+
     public Date getWarnTime() {
         return warnTime;
     }
@@ -90,10 +100,11 @@ public class ResWarn {
                 ", warnClass='" + warnClass + '\'' +
                 ", warnMsg='" + warnMsg + '\'' +
                 ", warnStatus=" + warnStatus +
-                ", startTime=" + startTime +
                 ", warnTime=" + warnTime +
                 ", handleUser='" + handleUser + '\'' +
+                ", handleMsg='" + handleMsg + '\'' +
                 ", handleTime=" + handleTime +
+                ", startTime=" + startTime +
                 '}';
     }
 }

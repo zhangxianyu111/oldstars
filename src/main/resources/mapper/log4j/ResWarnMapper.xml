@@ -10,11 +10,12 @@
         <result column="WARNSTATUS" property="warnStatus" javaType="int" jdbcType="TINYINT"/>
         <result column="WARNTIME" property="warnTime" javaType="Date" jdbcType="TIMESTAMP"/>
         <result column="HANDLEUSER" property="handleUser" javaType="String" jdbcType="VARCHAR"/>
+        <result column="HANDLEMSG" property="handleMsg" javaType="String" jdbcType="VARCHAR"/>
         <result column="HANDLETIME" property="handleTime" javaType="Date" jdbcType="TIMESTAMP"/>
         <result column="STARTTIME" property="startTime" javaType="Date" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="baseSql" >
-        WARNID,WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME,STARTTIME
+        WARNID,WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLEMSG,HANDLETIME,STARTTIME
     </sql>
     <select id="selectAll" parameterType="map" resultMap="warnResultMap">
         select
@@ -58,15 +59,15 @@
     <update id="handle" parameterType="map" >
         update reswarn set
         WARNSTATUS = #{warnStatus},
-        WARNMSG = #{content},
+        HANDLEMSG = #{content},
         HANDLEUSER = #{handleUser},
         HANDLETIME = now()
         <where>
             <if test="id != null and id != ''">
-                id = #{id}
+                warnId = #{id}
             </if>
             <if test="ids != null and ids != ''">
-                ids in (#{ids})
+                warnId in (#{ids})
             </if>
         </where>
 

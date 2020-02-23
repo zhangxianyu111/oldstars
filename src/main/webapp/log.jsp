@@ -30,12 +30,12 @@
                 <div class="layui-form layui-form-item">
                     <div >
                         <div class="layui-form-mid" style="font-size: 24px">模块:</div>
-                        <div class="layui-input-block" style="width: 100px;" id="class">
+                        <input class="layui-btn layui-btn-sm" onclick = "getAll()" id="allModule" value="所有"></input>
+                        <span id="class">
 
-                        </div>
-
-                        <%--<input type="text" autocomplete="off" class="layui-input" name="module">--%>
+                        </span>
                     </div>
+                    <br/>
                     <div class="layui-inline">
                         <div class="layui-form-mid">开始时间:</div>
                         <div class="layui-input-inline" style="width: 100px;">
@@ -92,15 +92,13 @@
                 </div>
 
             </div>
-            <div class="layui-tab-item">内容4</div>
-            <div class="layui-tab-item">内容5</div>
         </div>
     </div>
-    <div class="layui-row">
+ <%--   <div class="layui-row">
         <div class="layui-card">
 
         </div>
-    </div>
+    </div>--%>
 </div>
 <%--<script src="<%=basePath%>assets/layui.all.js"></script>--%>
 <script src="/layui/layui.all.js"></script>
@@ -112,12 +110,24 @@
     var logpage = "";
     var logClass1 = "";
     var logId1 = "";
+    var htmlPage = "1";
+
+
+    <!-- 跳转页面参数 -->
+    var tWarnId = "";
+    var tWarnClass = "";
+    var tSTime = "";
+    var tETime = "";
+    <!--是否弹出告警-->
+    var isTan = true;
+
     layui.use(['table','element'], function () {  // 引入 table模块
         var element = layui.element;
         var table = layui.table
             ,form = layui.form;
         element.on('tab(test)', function(data){
             if(data.index==0){//日志查询
+                htmlPage = "1";
                 var change = {
                     sTime: $("#sTime").val(),
                     eTime: $("#eTime").val(),
@@ -127,13 +137,15 @@
                 load1(change);
 
             }else if(data.index==1){//日志统计
+                htmlPage = "2";
                 layer.msg("1")
             }else if(data.index==2){//日志告警
+                htmlPage = "3";
                 var change = {
-                    sTime: $("#sTime").val(),
-                    eTime: $("#sTime").val(),
-                    warnClass:logClass1,
-                    warnId:logId1
+                    sTime: tSTime === ""?$("#sTime").val():tWarnId,
+                    eTime: tETime === ""?$("#eTime").val():tETime,
+                    warnClass: tWarnClass === ""?logClass1:tWarnClass,
+                    warnId: tWarnId === ""?logId1:tWarnId
                 };
                 load3(change);
             }
@@ -164,7 +176,7 @@
             ,method:'post'  //提交方式
             ,cols: [[
                 {type:'checkbox', width: 60, fixed: "left"}
-                ,{ field: 'logId',  title: 'ID',  sort: true,width: 40  }
+                ,{ field: 'logId',  title: 'ID',width: 40 ,hide:true }
                 ,{ field: 'createTime',  title: '时间', width: 160,templet: '<div>{{ layui.util.toDateString(d.createTime, "yyyy-MM-dd HH:mm:ss") }}</div>', align: "left" }
                 ,{ field: 'logClass',  title: '模块', width: 350,align: "left"  }
                 ,{ field: 'logLevel',  title: '日志级别',minWidth: 50,align: "left" }
@@ -195,30 +207,61 @@
                             var logclasses = data.logclasses;
                             var str = "";
                             logclasses.forEach(function(value, key, iterable) {
-                                str += "<input class=\"layui-btn layui-btn-sm\" id='module'"+key+" onclick = 'getModule(\""+value+"\")' value ="+value+"></input>";
+                                str += "<input type='text' class=\"layui-btn layui-btn-sm\" id='module'"+key+" onclick = 'getModule(\"module"+key+"\",\""+value+"\")' value ="+value+"></input>";
                             });
-                            $("#class").html(str)
-                            var warnList = data.warnList;
-                            for (var i =0 ;i<2;i++){
-                                var warnClass = warnList[i].warnClass;
-                                var warnId = warnList[i].warnId;
-                                var content = warnList[i].warnMsg;
-                                var warnTime = warnList[i].warnTime;
-                                var startTime = warnList[i].startTime;
-                                var htmlStr = '<input hidden name=\"warnClass2\" id=\"logClass2\" value=\"'+warnClass+'\">\n' +
-                                    '                <input hidden name=\"sTime2\" id=\"sTime2\" value=\"'+startTime+'\">\n' +
-                                    '                <input hidden name=\"eTime2\" id=\"eTime2\" value=\"'+warnTime+'\">\n' +
-                                    '                <input hidden name=\"warnId2\" id=\"warnId2\" value=\"'+warnId+'\">\n' +
-                                    '                <span>'+content+'</span>';
-                                //询问框
-                                layer.confirm(htmlStr, {
-                                    btn: ['查看'] //按钮
-                                }, function(){
-                                    element.tabChange('test', "3");
-                                    layer.close(layer.index);
 
-                                })
+                            $("#class").html(str);
+                            $("#class input[type='text']").each(function(){
+                                if (logClass1 != "" && $(this).val()===logClass1){
+                                    $("#allModule").attr("class","layui-btn layui-btn-sm");
+                                    $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
+                                }
+                            });
+                            if (isTan){
+                                isTan = false;
+                                var warnList = data.warnList;
+                                for (var i =0 ;i<2;i++){
+                                    var warnClass = warnList[i].warnClass;
+                                    var warnId = warnList[i].warnId;
+                                    var content = warnList[i].warnMsg;
+                                    var warnTime = warnList[i].warnTime;
+                                    var startTime = warnList[i].startTime;
+                                    var htmlStr = '<div id="htmlTanStr"><input hidden name=\"warnClass2\" id=\"logClass2\" value=\"'+warnClass+'\">\n' +
+                                        '                <input hidden name=\"sTime2\" id=\"sTime2\" value=\"'+startTime+'\">\n' +
+                                        '                <input hidden name=\"eTime2\" id=\"eTime2\" value=\"'+warnTime+'\">\n' +
+                                        '                <input hidden name=\"warnId2\" id=\"warnId2\" value=\"'+warnId+'\">\n' +
+                                        '                <span>'+content+'</span></div>';
+                                    debugger
+                                    parent.layer.open({
+                                        id:warnId,
+                                        type: 1
+                                        ,title: '警告'
+                                        ,area: ['400px', '200px']
+                                        ,shade: 0
+                                        ,maxmin: true
+                                        ,offset: [ //为了演示，随机坐标
+                                            Math.random()*($(window).height()-300)
+                                            ,Math.random()*($(window).width()-390)
+                                        ]
+                                        ,content:htmlStr
+                                        ,btn: ['查看'] //只是为了演示
+                                        ,yes: function(){
+                                            tWarnId = warnId;
+                                            tWarnClass = warnClass;
+                                            tSTime = startTime;
+                                            tETime = warnTime;
+                                            element.tabChange('test', "3");
+                                            layer.close(layer.index);
+                                        }
+
+                                        //,zIndex: layer.zIndex //重点1
+                                        //,success: function(layero){
+                                            //layer.setTop(layero); //重点2
+                                        //}
+                                    });
+                                }
                             }
+
 
                         }else{
                             layer.msg(result.msg,{icon: 5,time:2000});
@@ -283,7 +326,7 @@
             ,page: true  //开启分页
             ,where:{
                 sTime: $("#sTime").val(),
-                eTime: $("#sTime").val(),
+                eTime: $("#eTime").val(),
                 warnClass:logClass1,
                 warnId:logId1
             }
@@ -292,15 +335,25 @@
             ,method:'post'  //提交方式
             ,cols: [[
                 /*{type:'checkbox', width: 60, fixed: "left"}
-                ,*/{ field: 'warnId',  title: 'ID',  sort: true,width: 40 ,hidden:true }
+                ,*/{ field: 'warnId',  title: 'ID',  sort: true,width: 80 ,hide:true }
                 ,{ field: 'warnTime',  title: '时间', width: 160,templet: '<div>{{ layui.util.toDateString(d.warnTime, "yyyy-MM-dd HH:mm:ss") }}</div>', align: "left" }
                 ,{ field: 'warnClass',  title: '模块', width: 250,align: "left"  }
                 ,{ field: 'warnMsg',  title: '告警内容',minWidth: 300,align: "left" }
                 ,{ field: 'warnStatus',  title: '处理状态',minWidth: 50,align: "left" }
-                ,{ fixed: 'right', title: '操作', width: 40, align:'center', toolbar: '#barDemo3'  }
+                ,{ fixed: 'right', title: '操作', minWidth: 40, align:'center', toolbar: '#barDemo3'  }
             ]]
             ,height: 600
             ,done: function(res, curr, count){
+                var tWarnClass = "";//变颜色
+                $("#class input[type='text']").each(function(){
+                    if (logClass1 != "" && $(this).val()===logClass1){
+                        $("#allModule").attr("class","layui-btn layui-btn-sm");
+                        $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
+                    }
+                });
+                tSTime ===""?"":$("#sTime").val(new Date(tSTime).Format("yy-MM-dd"))
+                tETime ===""?"":$("#eTime").val(new Date(tETime).Format("yy-MM-dd"))
+
                 $.ajax({
                     type:"post",
                     url:"<%=basePath%>warn/getModule",
@@ -320,11 +373,94 @@
 
                         $(this).html("<span style=\"color: red\">未处理</span>")
                     }else if($(this).text()=='1'){
-                        $(this).text("<span style=\"color: green\">已处理</span>")
+                        $(this).html("<span style=\"color: green\">已处理</span>")
                     }
                 });
             }
         })
+        //监听头工具栏
+        table.on('toolbar(demo3)', function(obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var change;
+            if (obj.event === 'isAllWarn') {
+                 change = {
+                    sTime: $("#sTime").val(),
+                    eTime: $("#sTime").val(),
+                    warnClass:logClass1,
+                    warnId:""
+                };
+
+            }else if (obj.event === 'wWarnLogs'){
+                change = {
+                    sTime: $("#sTime").val(),
+                    eTime: $("#sTime").val(),
+                    warnClass:logClass1,
+                    warnId:"",
+                    status:0
+                };
+            }else if (obj.event === 'yWarnLogs'){
+                 change = {
+                    sTime: $("#sTime").val(),
+                    eTime: $("#sTime").val(),
+                    warnClass:logClass1,
+                    warnId:"",
+                    status:1
+                };
+
+            }
+            load3(change);
+        });
+        //监听工具条
+        table.on('tool(demo3)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+            layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'chuli') {
+                layer.confirm('<textarea id="textDemo" rows="10" cols="20"></textarea>', {
+                    btn: ['提交'] //按钮
+                }, function(){
+                    $.ajax({
+                        type:"post",
+                        url:"<%=basePath%>warn/handleWarn",
+                        async:true,
+                        data:{warnId:data.warnId,content:$("#textDemo").val()},
+                        dataType:"text",
+                        success:function(data){
+                            debugger
+                            var parseJSON = $.parseJSON(data);
+                            if(parseJSON.code=="0"){
+                                layer.close(layer.index);
+                                var chang = {
+                                    sTime: $("#sTime").val(),
+                                    eTime: $("#sTime").val(),
+                                    warnClass:logClass1,
+                                    warnId:logId1
+                                };
+                                load3(chang)
+                            }
+                        }
+                    });
+
+                });
+               /* window.open("<%=basePath%>/log4j/downLoad?id="+data.logId);*/
+            }
+            if (layEvent === 'chakan') {//查看
+                $.ajax({
+                    type:"post",
+                    url:"<%=basePath%>warn/seeWarn",
+                    async:true,
+                    data:{warnId:data.warnId},
+                    dataType:"text",
+                    success:function(data){
+                        debugger
+                        var parseJSON = $.parseJSON(data);
+                        if(parseJSON.code=="0"){
+                            layer.alert(data.warnMsg);
+                        }
+                    }
+                });
+            }
+
+        });
         <!-- 日志告警-->
 
 
@@ -333,16 +469,57 @@
     });
 
 
-    function getModule(value){
+    //所有
+    function getAll(){
+        logClass1 = "";
+        $("#class input[type='text']").each(function(){
+            if (logClass1 != "" && $(this).val()===logClass1){
+                $(this).attr("class","layui-btn layui-btn-sm");
+            }
+        });
+        $("#allModule").attr("class","layui-btn layui-btn-sm layui-btn-blue");
+        if (htmlPage === '1'){
+            var change = {logClass:"",sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
+            load1(change);
+            return false;
+        }else if(htmlPage === '2'){
+
+        }else if (htmlPage === '3') {
+            var change = {
+                sTime: $("#sTime").val(),
+                eTime: $("#sTime").val(),
+                warnClass:"",
+                warnId:""
+            };
+            //重新加载table
+            load3(change);
+            return false;
+        }
+    }
+
+
+    function getModule(key,value){
         debugger
-        var val = $("#sTime").val();
-        var val2 = $("#eTime").val();
-        var val3 = value;
-        var val4 = logpage;
-        var change = {logClass:value,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
-        logClass1 = value;
-        load1(change);
-        return false;
+        /*$("#"+key).attr("class","layui-btn layui-btn-sm layui-btn-blue");*/
+        if (htmlPage === '1'){
+            var change = {logClass:value,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
+            logClass1 = value;
+            load1(change);
+            return false;
+        }else if(htmlPage === '2'){
+
+        }else if (htmlPage === '3') {
+            var change = {
+                sTime: $("#sTime").val(),
+                eTime: $("#sTime").val(),
+                warnClass:logClass1,
+                warnId:""
+            };
+            //重新加载table
+            load3(change);
+            return false;
+        }
+
     }
 
     //搜索框
@@ -350,10 +527,25 @@
         var form = layui.form ,layer = layui.layer;
         //监听搜索框
         form.on('submit(searchSubmit)', function(data){
-            var change = {logClass:logClass,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
-            //重新加载table
-            load1(change);
-            return false;
+            if (htmlPage === '1'){
+                var change = {logClass:logClass,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
+                //重新加载table
+                load1(change);
+                return false;
+            }else if(htmlPage === '2'){
+
+            }else{
+                var change = {
+                    sTime: $("#sTime").val(),
+                    eTime: $("#sTime").val(),
+                    warnClass:logClass1,
+                    warnId:""
+                };
+                //重新加载table
+                load3(change);
+                return false;
+            }
+
         });
     });
     //重新加载table1
@@ -382,6 +574,22 @@
                 curr: 1 //从当前页码开始
             }
         });
+    }
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, // 月份
+            "d+": this.getDate(), // 日
+            "h+": this.getHours(), // 小时
+            "m+": this.getMinutes(), // 分
+            "s+": this.getSeconds(), // 秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
+            "S": this.getMilliseconds() // 毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + ""));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
     }
     //时间
     layui.use('laydate', function(){

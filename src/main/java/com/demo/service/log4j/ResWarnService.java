@@ -9,9 +9,9 @@ public interface ResWarnService {
 
     ResWarnRespDto selectAllByPage(Map map, ResWarnRespDto baseRespDto);
 
-    ResWarnRespDto handle(Map map, ResWarnRespDto baseRespDto);
+    ResWarnRespDto handle(Long warnId,String content, ResWarnRespDto baseRespDto);
 
-    ResWarnRespDto seeWarn(Map map, ResWarnRespDto baseRespDto);
+    ResWarnRespDto seeWarn(Long warnId, ResWarnRespDto baseRespDto);
 
     ResWarnRespDto selectModule(ResWarnRespDto baseRespDto);
 }

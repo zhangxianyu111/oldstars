@@ -68,11 +68,11 @@ public class ResWarnController {
      */
     @ResponseBody
     @RequestMapping(value = "/handleWarn",method = RequestMethod.POST)
-    public BaseRespDto handleWarn(@RequestBody ResWarnReqDto reqDto){
-        LOGGER.info(LogBuilderUtil.getBuilder("handleWarn","处理或批量处理告警信息","开始").appendParam("参数",reqDto).build());
+    public BaseRespDto handleWarn(@RequestParam("warnId") Long warnId,@RequestParam("content") String  content){
+        LOGGER.info(LogBuilderUtil.getBuilder("handleWarn","处理或批量处理告警信息","开始").appendParam("参数",warnId).build());
         ResWarnRespDto baseRespDto = new ResWarnRespDto();
         try {
-            baseRespDto = resWarnService.handle(reqDto.getMap(),baseRespDto);
+            baseRespDto = resWarnService.handle(warnId,content,baseRespDto);
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LOGGER.info(LogBuilderUtil.getBuilder("handleWarn","处理或批量处理告警信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){
@@ -89,11 +89,11 @@ public class ResWarnController {
      */
     @ResponseBody
     @RequestMapping(value = "/seeWarn",method = RequestMethod.POST)
-    public BaseRespDto seeWarn(@RequestBody ResWarnReqDto reqDto){
-        LOGGER.info(LogBuilderUtil.getBuilder("seeWarn","查看告警信息","开始").appendParam("参数",reqDto).build());
+    public BaseRespDto seeWarn(@RequestParam("warnId") Long warnId){
+        LOGGER.info(LogBuilderUtil.getBuilder("seeWarn","查看告警信息","开始").appendParam("参数",warnId).build());
         ResWarnRespDto baseRespDto = new ResWarnRespDto();
         try {
-            baseRespDto = resWarnService.seeWarn(reqDto.getMap(),baseRespDto);
+            baseRespDto = resWarnService.seeWarn(warnId,baseRespDto);
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LOGGER.info(LogBuilderUtil.getBuilder("seeWarn","查看告警信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){

@@ -30,28 +30,32 @@ public class ResWarnServiceImpl implements ResWarnService {
     }
 
     @Override
-    public ResWarnRespDto handle(Map map, ResWarnRespDto baseRespDto) {
-        Object id = map.get("id");
-        Object ids = map.get("ids");
-        if (id == null && ids == null){
+    public ResWarnRespDto handle(Long warnId,String content, ResWarnRespDto baseRespDto) {
+        if (warnId == null){
             baseRespDto.setCode(StatusConstant.FAIL);
             baseRespDto.setMsg("参数错误");
         }
-        map.put("handleUser","");//待新增
-        resWarnDao.handle(map);
+        Map<String,Object> param = new HashMap<>();
+        param.put("id",warnId);
+        param.put("content",content);
+        param.put("handleUser","");//待新增
+        param.put("warnStatus",1);
+        resWarnDao.handle(param);
         baseRespDto.setCode(StatusConstant.SUCCESS);
         baseRespDto.setMsg("处理成功");
         return baseRespDto;
     }
 
     @Override
-    public ResWarnRespDto seeWarn(Map map, ResWarnRespDto baseRespDto) {
-        Object id = map.get("id");
-        if (id == null){
+    public ResWarnRespDto seeWarn(Long warnId, ResWarnRespDto baseRespDto) {
+
+        if (warnId == null){
             baseRespDto.setCode(StatusConstant.FAIL);
             baseRespDto.setMsg("参数错误");
         }
-        ResWarn resWarn = resWarnDao.seeWarn(map);
+        Map<String,Object> parma = new HashMap<>();
+        parma.put("warnId",warnId);
+        ResWarn resWarn = resWarnDao.seeWarn(parma);
         if (resWarn == null){
             baseRespDto.setCode(StatusConstant.FAIL);
             baseRespDto.setMsg("未查到该信息");
