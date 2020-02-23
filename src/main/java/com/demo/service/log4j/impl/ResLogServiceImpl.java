@@ -104,9 +104,8 @@ public class ResLogServiceImpl implements ResLogService {
     }
 
     @Override
-    public ResLogRespDto selectModule(ResLogRespDto respDto) {
+    public ResLogRespDto selectModule(Map<String,Object> paramMap,ResLogRespDto respDto) {
         //查询error 和 warn 数量
-        Map<String,Object> paramMap = new HashMap<>();
         paramMap.put("logLevel","ERROR");
         Long errCount = resLogDao.selectAllCount(paramMap);
         paramMap.put("logLevel","WARN");

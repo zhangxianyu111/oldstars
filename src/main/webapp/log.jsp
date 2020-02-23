@@ -142,8 +142,8 @@
             }else if(data.index==2){//日志告警
                 htmlPage = "3";
                 var change = {
-                    sTime: tSTime === ""?$("#sTime").val():tWarnId,
-                    eTime: tETime === ""?$("#eTime").val():tETime,
+                    sTime: tSTime === ""?$("#sTime").val():new Date(tSTime).Format("yyyy-MM-dd"),
+                    eTime: tETime === ""?$("#eTime").val():new Date(tETime).Format("yyyy-MM-dd"),
                     warnClass: tWarnClass === ""?logClass1:tWarnClass,
                     warnId: tWarnId === ""?logId1:tWarnId
                 };
@@ -193,12 +193,13 @@
                         $(this).text("警告")
                     }
                 });
-
+                var c = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("eTime").val(),logLevel:""};
                 $.ajax({
                     type:"post",
                     url:"<%=basePath%>log4j/selectModule",
-                    async:true,
-                    data:{},
+                    async:false,
+                    contentType : 'application/json',//添加这句话
+                    data:JSON.stringify(c),
                     dataType:"json",
                     success:function(data){
                         if(data.code=="0"){
@@ -250,8 +251,10 @@
                                             tWarnClass = warnClass;
                                             tSTime = startTime;
                                             tETime = warnTime;
+                                            parent.layer.closeAll();
                                             element.tabChange('test', "3");
-                                            layer.close(layer.index);
+                                            //layer.close(layer.index);
+
                                         }
 
                                         //,zIndex: layer.zIndex //重点1
@@ -344,27 +347,33 @@
             ]]
             ,height: 600
             ,done: function(res, curr, count){
-                var tWarnClass = "";//变颜色
+                debugger
                 $("#class input[type='text']").each(function(){
-                    if (logClass1 != "" && $(this).val()===logClass1){
+                    if ((logClass1 != "" && $(this).val()===logClass1)||(tWarnClass != "" && $(this).val()=== tWarnClass)){
                         $("#allModule").attr("class","layui-btn layui-btn-sm");
                         $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
                     }
                 });
+                debugger
                 tSTime ===""?"":$("#sTime").val(new Date(tSTime).Format("yy-MM-dd"))
                 tETime ===""?"":$("#eTime").val(new Date(tETime).Format("yy-MM-dd"))
-
+                var c = {
+                    warnId:tWarnId === ''?logId1:tWarnId,
+                    warnClass:tWarnClass===''?logClass1:tWarnClass,
+                    sTime:$("#sTime").val(),
+                    eTime:$("#eTime").val()
+                };
                 $.ajax({
                     type:"post",
                     url:"<%=basePath%>warn/getModule",
-                    async:true,
-                    data:{},
-                    dataType:"text",
+                    async:false,
+                    contentType : 'application/json',//添加这句话
+                    data:JSON.stringify(c),
+                    dataType:"json",
                     success:function(data){
-                        var parseJSON = $.parseJSON(data);
-                        if(parseJSON.code=="0"){
-                            $("#wCount").html(parseJSON.untreatedCount);
-                            $("#yCount").html(parseJSON.processedCount);
+                        if(data.code=="0"){
+                            $("#wCount").html(data.untreatedCount);
+                            $("#yCount").html(data.processedCount);
                         }
                     }
                 });
@@ -471,12 +480,14 @@
 
     //所有
     function getAll(){
-        logClass1 = "";
+
         $("#class input[type='text']").each(function(){
-            if (logClass1 != "" && $(this).val()===logClass1){
+            if ((logClass1 != "" && $(this).val()===logClass1)||(tWarnClass != "" && $(this).val()===tWarnClass)){
                 $(this).attr("class","layui-btn layui-btn-sm");
             }
         });
+        logClass1 = "";
+        tWarnClass = "";
         $("#allModule").attr("class","layui-btn layui-btn-sm layui-btn-blue");
         if (htmlPage === '1'){
             var change = {logClass:"",sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
@@ -528,16 +539,19 @@
         //监听搜索框
         form.on('submit(searchSubmit)', function(data){
             if (htmlPage === '1'){
-                var change = {logClass:logClass,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
+                var change = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
                 //重新加载table
                 load1(change);
                 return false;
             }else if(htmlPage === '2'){
 
             }else{
+                debugger
+                tSTime = $("#sTime").val();
+                tETime = $("#eTime").val();
                 var change = {
                     sTime: $("#sTime").val(),
-                    eTime: $("#sTime").val(),
+                    eTime: $("#eTime").val(),
                     warnClass:logClass1,
                     warnId:""
                 };

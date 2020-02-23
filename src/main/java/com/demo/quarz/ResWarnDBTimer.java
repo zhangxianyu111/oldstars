@@ -65,6 +65,12 @@ public class ResWarnDBTimer {
 
     }
 
+    public void ScheduledDelete() throws Exception{
+        logger.info("开始调用第三方接口删除数据库过期日志信息任务");
+        resLogDao.deleteExpire();
+        logger.info("开始调用第三方接口删除数据库过期日志信息任务");
+    }
+
 
 
     public void ConfigScheduleWarnLog(String msg, Long warnCount,Long errorCount, String className){

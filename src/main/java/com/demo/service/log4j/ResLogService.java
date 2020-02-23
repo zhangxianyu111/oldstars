@@ -14,5 +14,5 @@ public interface ResLogService {
 
     void downLoad(Long id,HttpServletResponse response) throws Exception;
 
-    ResLogRespDto selectModule(ResLogRespDto baseRespDto);
+    ResLogRespDto selectModule(Map<String,Object> paramMap,ResLogRespDto baseRespDto);
 }

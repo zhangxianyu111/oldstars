@@ -13,5 +13,5 @@ public interface ResWarnService {
 
     ResWarnRespDto seeWarn(Long warnId, ResWarnRespDto baseRespDto);
 
-    ResWarnRespDto selectModule(ResWarnRespDto baseRespDto);
+    ResWarnRespDto selectModule(Map<String,Object> map,ResWarnRespDto baseRespDto);
 }

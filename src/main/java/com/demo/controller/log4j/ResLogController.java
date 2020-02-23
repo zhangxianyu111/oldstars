@@ -49,10 +49,10 @@ public class ResLogController {
     }
     @ResponseBody
     @RequestMapping(value = "/selectModule",method = RequestMethod.POST)
-    public BaseRespDto selectModule(){
+    public BaseRespDto selectModule(@RequestBody ResLogReqDto reqDto){
         ResLogRespDto baseRespDto = new ResLogRespDto();
         try {
-            baseRespDto = resLogService.selectModule(baseRespDto);
+            baseRespDto = resLogService.selectModule(reqDto.getMap(),baseRespDto);
             baseRespDto.setCode(StatusConstant.SUCCESS);
         }catch (Exception e){
             MDC.put("exception", e.getClass().getName());

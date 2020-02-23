@@ -66,8 +66,7 @@ public class ResWarnServiceImpl implements ResWarnService {
     }
 
     @Override
-    public ResWarnRespDto selectModule(ResWarnRespDto respDto) {
-        Map<String,Object> paramMap = new HashMap<>();
+    public ResWarnRespDto selectModule(Map<String,Object> paramMap,ResWarnRespDto respDto) {
         //查询处理 和 未处理 数量
         paramMap.put("warnStatus",0);//未处理
         Long untreatedCount = resWarnDao.selectAllCount(paramMap);

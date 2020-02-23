@@ -48,11 +48,11 @@ public class ResWarnController {
     }
     @ResponseBody
     @RequestMapping(value = "getModule",method = RequestMethod.POST)
-    public BaseRespDto getModule(){
+    public BaseRespDto getModule(@RequestBody ResWarnReqDto reqDto){
         LOGGER.info(LogBuilderUtil.getBuilder("getModule","查询模块信息","开始").build());
         ResWarnRespDto baseRespDto = new ResWarnRespDto();
         try {
-            baseRespDto = resWarnService.selectModule(baseRespDto);
+            baseRespDto = resWarnService.selectModule(reqDto.getMap(),baseRespDto);
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LOGGER.info(LogBuilderUtil.getBuilder("getAllWarn","查询模块信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){
