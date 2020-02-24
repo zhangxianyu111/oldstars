@@ -48,7 +48,7 @@ public class ResLogServiceImpl implements ResLogService {
         String path = "";
         if (resLogs != null && resLogs.size()>0){
             for (ResLog resLog : resLogs) {
-                String property = PropertiesUtil.getProperty("log4j.appender." + resLog.getModuleName() + ".File", "logpath.properties");
+                String property = PropertiesUtil.getProperty("log4j.appender." + resLog.getModuleName() + ".File", "log4j.properties");
                 if (resLog.getCreateTime() != null && DateUtil.isToday(resLog.getCreateTime())){
                     path = property;
                 }else{

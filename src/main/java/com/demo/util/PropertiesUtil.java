@@ -47,6 +47,10 @@ public class PropertiesUtil {
         if(null == props || props.isEmpty()) {
             loadProps(propPath);
         }
+        String property = props.getProperty(key);
+        if (property == null){
+            loadProps(propPath);
+        }
         return props.getProperty(key);
     }
 

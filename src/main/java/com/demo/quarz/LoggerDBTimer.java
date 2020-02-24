@@ -33,10 +33,10 @@ public class LoggerDBTimer {
     @Resource
     private LogPointerMapper logPointerMapper;
 
-    static{
+    /*static{
         PropertiesUtil.loadProps("logpath.properties");
         //pointer = Long.valueOf(XmlUtil.XMLReader2JDOM("logpath.properties"));
-    }
+    }*/
     ExecutorService exec = Executors.newFixedThreadPool(5);
 
 

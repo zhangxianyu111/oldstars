@@ -66,7 +66,7 @@
                 <script type="text/html" id="toolbarDemo">
                     <div class="layui-btn-container">
                         <button class="layui-btn layui-btn-sm" lay-event="">同步更新</button>
-                        <button class="layui-btn layui-btn-sm" lay-event="getCheckData" onclick="getCheckData()">全量下载</button>
+                        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">全量下载</button>
                         <button class="layui-btn layui-btn-sm" lay-event="isALL" id="allLog">全部日志</button>
                         <button class="layui-btn layui-btn-sm" lay-event="errLogs" id="errLog">错误日志<span id="errCount" style="color: red;font-size: 20px"></span></button>
                         <button class="layui-btn layui-btn-sm" lay-event="warnLogs" id="warnLog">警告日志<span id="warnCount" style="color: greenyellow;font-size: 20px"></span></button>
@@ -107,8 +107,8 @@
 
 <script>
 
-    var id_str = "";
-    var warn_id_str = "";
+    //var id_str = "";
+    //var warn_id_str = "";
     var logpage = "";
     var logModule1 = "";
     var logId1 = "";
@@ -294,6 +294,8 @@
         table.on('toolbar(demo)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
             if (obj.event === 'getCheckData'){
+                debugger
+                var id_str = "";
                 var data = checkStatus.data;
                 if (data.length > 0) {
                     for (var i = 0; i < data.length; i++) {
@@ -430,6 +432,7 @@
             if (obj.event === 'handleCheckData') {
                 //批量处理
                 debugger
+                var warn_id_str = "";
                 var data = checkStatus.data;
                 var isBreak = false;
                 if (data.length > 0) {
