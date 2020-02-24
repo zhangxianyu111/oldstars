@@ -54,17 +54,9 @@ public class ResWarnDBTimer {
         List<Statistics.Item> items = moudle.getItems();
         for (Statistics.Item item : items) {
             Long warnCount = item.getWarnCount();
-            String className = item.getName();
-            if (SpringContextHolder.existBean(className)){
-                Object bean = SpringContextHolder.getApplicationContext().getBean(className);
-                String classPath = bean.getClass().getName();
-                className = classPath;
-            }else{
-                logger.error("获取bean"+className+"失败！！");
-                continue;
-            }
+            String moduleName = item.getName();
             Long errorCount = item.getErrorCount();
-            ConfigScheduleWarnLog(warnMsg, warnCount,errorCount, className);
+            ConfigScheduleWarnLog(warnMsg, warnCount,errorCount, moduleName);
         }
         logger.info("调用第三方接口查询告警信息结束");
 
@@ -78,28 +70,28 @@ public class ResWarnDBTimer {
 
 
 
-    public void ConfigScheduleWarnLog(String msg, Long warnCount,Long errorCount, String className){
+    public void ConfigScheduleWarnLog(String msg, Long warnCount,Long errorCount, String moduleName){
         Map<String, Object> paramMap = new HashMap<>();
         String sTime = DateUtil.getSubOrAddTime(-DATELIMIT);
         String eTime = DateUtil.getNowStr();
         paramMap.put("sTime", sTime);
         paramMap.put("eTime", eTime);
         paramMap.put("logLevel", "WARN");
-        paramMap.put("logClass", className);
+        paramMap.put("moduleName", moduleName);
         Long warnDBCount = resLogDao.selectAllCount(paramMap);
         paramMap.put("logLevel", "ERROR");
         Long errorDBCount = resLogDao.selectAllCount(paramMap);
         if (warnDBCount != null && errorDBCount != null && (warnDBCount.longValue() >= warnCount.longValue()
                 || errorDBCount.longValue()>= errorCount.longValue() )) {
             //添加报警 %moudlename%模块%level%日志过多，在%stime%-%etime%内,(错误日志%errorcount%次，警告日志%warncount%次)
-            String warnMsgStr = msg.trim().replace("%moudlename%", className)
+            String warnMsgStr = msg.trim().replace("%moudlename%", moduleName)
                     .replace("%level%",(warnDBCount.longValue() >= warnCount.longValue())?"警告":"错误")
                     .replace("%stime%", sTime)
                     .replace("%etime%", eTime)
                     .replace("%errorcount%", String.valueOf(errorDBCount))
                     .replace("%warncount%",String.valueOf(warnDBCount));
             ResWarn resWarn = new ResWarn();
-            resWarn.setWarnClass(className);
+            resWarn.setWarnModule(moduleName);
             resWarn.setWarnStatus(0);
             resWarn.setStartTime(DateUtil.parseDate(sTime));
             resWarn.setWarnMsg(warnMsgStr);
@@ -240,7 +232,7 @@ public class ResWarnDBTimer {
                     .replace("%etime%", eTime)
                     .replace("%countsmg%", String.valueOf(count));
             ResWarn resWarn = new ResWarn();
-            resWarn.setWarnClass(strs[0]);
+            resWarn.setWarnModule(strs[0]);
             resWarn.setWarnStatus(0);
             resWarn.setWarnMsg(warnMsgStr);
             resWarnDao.insert(resWarn);

@@ -35,13 +35,58 @@ public class LogBuilderUtil {
     public static Builder getBuilder(String methodName, String bussinessDesc, String stepDesc) {
         return new Builder(null, methodName, bussinessDesc, stepDesc, null, null);
     }
-
-    public static void failToLog(BaseRespDto baseRespDto, Exception e, Logger LOGGER) {
-        if (baseRespDto != null){
-            baseRespDto.setCode(StatusConstant.FAIL);
-        }
+    /**
+     * debug信息方法
+     * @param modelName 模块名称
+     * @param className 类名
+     * @param methodName 方法名
+     */
+    public static void recordDebuggerLogs(String msg,String modelName,String className,String methodName){
+        Logger logger = getLogger(modelName, className, methodName);
+        logger.debug(msg);
+    }
+    /**
+     * INFO信息方法
+     * @param modelName 模块名称
+     * @param className 类名
+     * @param methodName 方法名
+     */
+    public static void recordInfoLogs(String msg,String modelName,String className,String methodName){
+        Logger logger = getLogger(modelName, className, methodName);
+        logger.info(msg);
+    }
+    /**
+     * 警告信息方法
+     * @param modelName 模块名称
+     * @param className 类名
+     * @param methodName 方法名
+     */
+    public static void recordWarnLogs(String msg,String modelName,String className,String methodName){
+        Logger logger = getLogger(modelName, className, methodName);
+        logger.warn(msg);
+    }
+    private static Logger getLogger(String modelName, String className, String methodName) {
+        PropertyConfigurator.configure(LogBuilderUtil.class.getResource("/").getPath()+"log4j.properties");
+        Logger logger = LoggerFactory.getLogger(modelName.trim());
+        MDC.put("exception", "");
+        MDC.put("class", className);
+        MDC.put("method", methodName);
+        return logger;
+    }
+    /**
+     * 错误信息方法
+     * @param modelName 模块名称
+     * @param className 类名
+     * @param methodName 方法名
+     */
+    public static void recordErrorLogs(Throwable e,String modelName,String className,String methodName){
+        PropertyConfigurator.configure(LogBuilderUtil.class.getResource("/").getPath()+"log4j.properties");
+        Logger logger = LoggerFactory.getLogger(modelName.trim());
+        MDC.put("exception", e.getClass().getName());
+        MDC.put("class", className);
+        MDC.put("method", methodName);
         String eStr = ExceptionUtil.getTrace(e);
-        LOGGER.error(eStr,e);
+        logger.error(eStr,e);
     }
 
     public static class Builder {
@@ -105,22 +150,6 @@ public class LogBuilderUtil {
             return sb.toString();
         }
 
-        /**
-         * 警告日志方法
-         * @param warningMsg警告信息
-         * @param modelName 模块名称
-         * @param className 类名
-         * @param methodName方法名
-         */
-        public void recordWarningLogs(Throwable e,String warningMsg,String modelName,String className,String methodName){
-
-            PropertyConfigurator.configure(getClass().getResource("/").getPath()+"log4j.properties");
-            LoggerFactory.getLogger(ResLogController.class);
-            Logger logger = LoggerFactory.getLogger(modelName.trim()+"_WARN");
-            MDC.put("exception", e.getClass().getName());
-            String eStr = ExceptionUtil.getTrace(e);
-            logger.warn(eStr,e);
-        }
 
         public Builder appendParam(String param, boolean value) {
             return appendParam(param, String.valueOf(value));

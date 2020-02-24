@@ -24,11 +24,7 @@ import java.util.*;
 @Service
 public class ResLogServiceImpl implements ResLogService {
 
-    public static final String rootPath;
-    static {
-        //PropertiesUtil.loadProps("logpath.properties");
-        rootPath = PropertiesUtil.getProperty("logpath","logpath.properties");
-    }
+
 
     @Resource
     private ResLogMapper resLogDao;
@@ -39,40 +35,10 @@ public class ResLogServiceImpl implements ResLogService {
     public ResLogRespDto selectAllByPage(Map<String, Object> paramMap, ResLogRespDto respDto) {
         PageHelper.startPage(Integer.valueOf(paramMap.get("page").toString()),Integer.valueOf(paramMap.get("limit").toString()));
         List<ResLog> logs = resLogDao.selectAll(paramMap);
-        //获取文件路径
-        for (ResLog log : logs) {
-            if (log.getCreateTime() != null && DateUtil.isToday(log.getCreateTime())){
-                log.setPath(rootPath);
-            }else{
-                log.setPath(rootPath+"."+DateUtil.parseDateToStr(log.getCreateTime(),DateUtil.DATE_FORMAT_YYYY_MM_DD));
-            }
-        }
         PageInfo pageInfo = new PageInfo(logs);
         long total = pageInfo.getTotal();
         respDto.setCount(total);
         respDto.setData(logs);
-        //查询error 和 warn 数量
-        paramMap.put("logLevel","ERROR");
-        Long errCount = resLogDao.selectAllCount(paramMap);
-        paramMap.put("logLevel","WARN");
-        Long warnCount = resLogDao.selectAllCount(paramMap);
-        respDto.setErrCount(errCount == null?0L:errCount);
-        respDto.setWarnCount(warnCount == null?0L:warnCount);
-        //查询未处理告警信息
-        paramMap.clear();
-        paramMap.put("warnStatus",0);
-        List<ResWarn> resLogs = resWarnDao.selectAll(paramMap);
-        respDto.setWarnList(resLogs);
-        //查询模块
-        List<String> logClasses = new ArrayList<>();
-        Statistics statistics = InitConfig.getStatistics();
-        String warnMsg = statistics.getWarnMsg();
-        Statistics.Moudle moudle = statistics.getMoudle();
-        List<Statistics.Item> items = moudle.getItems();
-        for (Statistics.Item item : items) {
-            logClasses.add(item.getName());
-        }
-        respDto.setLogclasses(logClasses);
         return respDto;
     }
 
@@ -82,10 +48,11 @@ public class ResLogServiceImpl implements ResLogService {
         String path = "";
         if (resLogs != null && resLogs.size()>0){
             for (ResLog resLog : resLogs) {
+                String property = PropertiesUtil.getProperty("log4j.appender." + resLog.getModuleName() + ".File", "logpath.properties");
                 if (resLog.getCreateTime() != null && DateUtil.isToday(resLog.getCreateTime())){
-                    path = rootPath;
+                    path = property;
                 }else{
-                    path = rootPath+"."+DateUtil.parseDateToStr(resLog.getCreateTime(),DateUtil.DATE_FORMAT_YYYY_MM_DD);
+                    path = property+"."+DateUtil.parseDateToStr(resLog.getCreateTime(),DateUtil.DATE_FORMAT_YYYY_MM_DD);
                 }
                 download(path,response);
             }
@@ -118,15 +85,7 @@ public class ResLogServiceImpl implements ResLogService {
         List<ResWarn> resLogs = resWarnDao.selectAll(paramMap);
         respDto.setWarnList(resLogs);
         //查询模块
-        List<String> logClasses = new ArrayList<>();
-        Statistics statistics = InitConfig.getStatistics();
-        String warnMsg = statistics.getWarnMsg();
-        Statistics.Moudle moudle = statistics.getMoudle();
-        List<Statistics.Item> items = moudle.getItems();
-        for (Statistics.Item item : items) {
-            logClasses.add(item.getName());
-        }
-        respDto.setLogclasses(logClasses);
+        respDto.setLogModules(InitConfig.getStatistics().getMoudle().getItems());
         return respDto;
     }
 

@@ -16,7 +16,7 @@ public class ResWarnReqDto extends BaseReqDto {
     //warnIds
     private String warnIds;
     //模块
-    private String warnClass;
+    private String warnModule;
     //处理状态 0：未处理 1：已处理
     private String status;
     //起始时间
@@ -26,18 +26,12 @@ public class ResWarnReqDto extends BaseReqDto {
     //处理提交内容
     private String content;
 
-    public String getWarnClass() {
-        return warnClass;
+    public String getWarnModule() {
+        return warnModule;
     }
 
-    public void setWarnClass(String warnClass) {
-        if (SpringContextHolder.existBean(warnClass)){
-            Object bean = SpringContextHolder.getApplicationContext().getBean(warnClass);
-            String classPath = bean.getClass().getName();
-            this.warnClass  = classPath;
-            return;
-        }
-        this.warnClass = warnClass;
+    public void setWarnModule(String warnModule) {
+        this.warnModule = warnModule;
     }
 
     public String getStatus() {
@@ -97,9 +91,9 @@ public class ResWarnReqDto extends BaseReqDto {
                 StringUtils.isNotBlank(this.warnIds.trim())){
             paramMap.put("warnIds",this.warnIds.trim());
         }
-        if (StringUtils.isNotBlank(this.warnClass) &&
-                StringUtils.isNotBlank(this.warnClass.trim())){
-            paramMap.put("warnClass",this.warnClass.trim());
+        if (StringUtils.isNotBlank(this.warnModule) &&
+                StringUtils.isNotBlank(this.warnModule.trim())){
+            paramMap.put("warnModule",this.warnModule.trim());
         }
         if (StringUtils.isNotBlank(this.status) &&
                 StringUtils.isNotBlank(this.status.trim())){
@@ -128,7 +122,7 @@ public class ResWarnReqDto extends BaseReqDto {
         return "ResWarnReqDto{" +
                 "warnId=" + warnId +
                 ", warnIds='" + warnIds + '\'' +
-                ", warnClass='" + warnClass + '\'' +
+                ", warnModule='" + warnModule + '\'' +
                 ", status='" + status + '\'' +
                 ", sTime='" + sTime + '\'' +
                 ", eTime='" + eTime + '\'' +

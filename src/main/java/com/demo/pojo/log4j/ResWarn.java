@@ -5,7 +5,7 @@ import java.util.Date;
 public class ResWarn {
     private Long warnId;
     //告警模块
-    private String warnClass;
+    private String warnModule;
     //告警内容
     private String warnMsg;
     //处理状态0：未处理 1：已处理
@@ -29,12 +29,12 @@ public class ResWarn {
         this.warnId = warnId;
     }
 
-    public String getWarnClass() {
-        return warnClass;
+    public String getWarnModule() {
+        return warnModule;
     }
 
-    public void setWarnClass(String warnClass) {
-        this.warnClass = warnClass;
+    public void setWarnModule(String warnModule) {
+        this.warnModule = warnModule;
     }
 
     public String getWarnMsg() {
@@ -97,7 +97,7 @@ public class ResWarn {
     public String toString() {
         return "ResWarn{" +
                 "warnId=" + warnId +
-                ", warnClass='" + warnClass + '\'' +
+                ", warnModule='" + warnModule + '\'' +
                 ", warnMsg='" + warnMsg + '\'' +
                 ", warnStatus=" + warnStatus +
                 ", warnTime=" + warnTime +

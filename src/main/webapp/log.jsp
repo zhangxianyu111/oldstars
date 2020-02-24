@@ -110,14 +110,15 @@
     var id_str = "";
     var warn_id_str = "";
     var logpage = "";
-    var logClass1 = "";
+    var logModule1 = "";
     var logId1 = "";
     var htmlPage = "1";
 
 
     <!-- 跳转页面参数 -->
     var tWarnId = "";
-    var tWarnClass = "";
+    var tWarnModule = "";
+    var tWarnModuleName = "";
     var tSTime = "";
     var tETime = "";
     <!--是否弹出告警-->
@@ -138,7 +139,7 @@
                 var change = {
                     sTime: $("#sTime").val(),
                     eTime: $("#eTime").val(),
-                    logClass:logClass1,
+                    logModule:logModule1,
                     logLevel:""
                 };
                 load1(change);
@@ -151,7 +152,7 @@
                 var change = {
                     sTime: tSTime === ""?$("#sTime").val():new Date(tSTime).Format("yyyy-MM-dd"),
                     eTime: tETime === ""?$("#eTime").val():new Date(tETime).Format("yyyy-MM-dd"),
-                    warnClass: tWarnClass === ""?logClass1:tWarnClass,
+                    warnModule: tWarnModule === ""?logModule1:tWarnModule,
                     warnId: tWarnId === ""?logId1:tWarnId
                 };
                 load3(change);
@@ -175,7 +176,7 @@
             ,where:{
                 sTime: $("#sTime").val(),
                 eTime: $("#eTime").val(),
-                logClass:logClass1,
+                logModule:logModule1,
                 logLevel:""
             }
             ,limits: [20,30,50,100]  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]。
@@ -185,10 +186,9 @@
                 {type:'checkbox', width: 60, fixed: "left"}
                 ,{ field: 'logId',  title: 'ID',width: 40 ,hide:true }
                 ,{ field: 'createTime',  title: '时间', width: 160,templet: '<div>{{ layui.util.toDateString(d.createTime, "yyyy-MM-dd HH:mm:ss") }}</div>', align: "left" }
-                ,{ field: 'logClass',  title: '模块', width: 350,align: "left"  }
+                ,{ field: 'logModule',  title: '模块', width: 350,align: "left"  }
                 ,{ field: 'logLevel',  title: '日志级别',minWidth: 50,align: "left" }
                 ,{ field: 'logMsg',  title: '日志内容',minWidth: 200,align: "left" }
-                ,{ field: 'path',  title: '路径',minWidth: 300,align: "left" }
                 ,{ fixed: 'right', title: '操作', width: 80, align:'center', toolbar: '#barDemo'  }
             ]]
             ,height: 600
@@ -213,7 +213,7 @@
                     $("#errLog").attr("class","layui-btn layui-btn-sm");
                     $("#warnLog").attr("class","layui-btn layui-btn-sm layui-btn-blue");
                 }
-                var c = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("eTime").val(),logLevel:""};
+                var c = {logModule:logModule1,sTime:$("#sTime").val(),eTime:$("eTime").val(),logLevel:""};
                 $.ajax({
                     type:"post",
                     url:"<%=basePath%>log4j/selectModule",
@@ -225,15 +225,16 @@
                         if(data.code=="0"){
                             $("#errCount").html(data.errCount);
                             $("#warnCount").html(data.warnCount);
-                            var logclasses = data.logclasses;
+                            var logModules = data.logModules;
                             var str = "";
-                            logclasses.forEach(function(value, key, iterable) {
-                                str += "<input type='text' class=\"layui-btn layui-btn-sm\" id='module'"+key+" onclick = 'getModule(\"module"+key+"\",\""+value+"\")' value ="+value+"></input>";
+                            debugger
+                            logModules.forEach(function(value, key) {
+                                str += "<input type='text' class=\"layui-btn layui-btn-sm\" id=\'"+value.name+"\' onclick = 'getModule(\""+value.name+"\",\""+value.desc+"\")' value ="+value.desc+"></input>";
                             });
 
                             $("#class").html(str);
                             $("#class input[type='text']").each(function(){
-                                if (logClass1 != "" && $(this).val().toLowerCase()===logClass1.toLowerCase()){
+                                if (logModule1 != "" && $(this).val().toLowerCase()===logModule1.toLowerCase()){
                                     $("#allModule").attr("class","layui-btn layui-btn-sm");
                                     $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
                                 }
@@ -242,12 +243,12 @@
                                 isTan = false;
                                 var warnList = data.warnList;
                                 for (var i =0 ;i<2;i++){
-                                    var warnClass = warnList[i].warnClass;
+                                    var warnModule = warnList[i].warnModule;
                                     var warnId = warnList[i].warnId;
                                     var content = warnList[i].warnMsg;
                                     var warnTime = warnList[i].warnTime;
                                     var startTime = warnList[i].startTime;
-                                    var htmlStr = '<div id="htmlTanStr"><input hidden name=\"warnClass2\" id=\"logClass2\" value=\"'+warnClass+'\">\n' +
+                                    var htmlStr = '<div id="htmlTanStr"><input hidden name=\"warnModule2\" id=\"logModule2\" value=\"'+warnModule+'\">\n' +
                                         '                <input hidden name=\"sTime2\" id=\"sTime2\" value=\"'+startTime+'\">\n' +
                                         '                <input hidden name=\"eTime2\" id=\"eTime2\" value=\"'+warnTime+'\">\n' +
                                         '                <input hidden name=\"warnId2\" id=\"warnId2\" value=\"'+warnId+'\">\n' +
@@ -268,12 +269,10 @@
                                         ,yes: function(){
                                             chuliStatus = "0";
                                             tWarnId = warnId;
-                                            //tWarnClass = warnClass;
-                                            var strings = warnClass.split(".");
-                                            tWarnClass = strings[strings.length-1];
-                                            tWarnClass = tWarnClass.replace(tWarnClass[0],tWarnClass[0].toLowerCase());
+                                            tWarnModule = warnModule;
                                             tSTime = startTime;
                                             tETime = warnTime;
+                                            tWarnModuleName =
                                             parent.layer.closeAll();
                                             element.tabChange('test', "3");
 
@@ -306,19 +305,19 @@
             }
             if (obj.event === 'isALL'){
                 isAll = "";
-                var change = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:""};
+                var change = {logModule:logModule1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:""};
                 logpage = "";
                 load1(change);
             }
             if (obj.event === 'errLogs'){
                 isAll = "0";
-                var change = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:"ERROR"};
+                var change = {logModule:logModule1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:"ERROR"};
                 logpage = "ERROR";
                 load1(change);
             }
             if (obj.event === 'warnLogs'){
                 isAll = "1";
-                var change = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:"WARN"};
+                var change = {logModule:logModule1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:"WARN"};
                 logpage = "WARN";
                 load1(change);
             }
@@ -350,7 +349,7 @@
             ,where:{
                 sTime: $("#sTime").val(),
                 eTime: $("#eTime").val(),
-                warnClass:logClass1,
+                warnModule:logModule1,
                 warnId:logId1
             }
             ,limits: [20,30,50,100]  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]。
@@ -360,19 +359,22 @@
                 {type:'checkbox', width: 60, fixed: "left"}
                 ,{ field: 'warnId',  title: 'ID',  sort: true,width: 80 ,hide:true }
                 ,{ field: 'warnTime',  title: '时间', width: 160,templet: '<div>{{ layui.util.toDateString(d.warnTime, "yyyy-MM-dd HH:mm:ss") }}</div>', align: "left" }
-                ,{ field: 'warnClass',  title: '模块', width: 250,align: "left"  }
+                ,{ field: 'warnModule',  title: '模块', width: 250,align: "left"  }
                 ,{ field: 'warnMsg',  title: '告警内容',minWidth: 300,align: "left" }
                 ,{ field: 'warnStatus',  title: '处理状态',minWidth: 50,align: "left" }
                 ,{ fixed: 'right', title: '操作', minWidth: 40, align:'center', toolbar: '#barDemo3'  }
             ]]
             ,height: 600
             ,done: function(res, curr, count){
+                debugger
                 $("#class input[type='text']").each(function(){
-                    if (tWarnClass != "" && $(this).val().toLowerCase()=== tWarnClass.toLowerCase()){
-                        $("#allModule").attr("class","layui-btn layui-btn-sm");
+                    if (tWarnModule != "" && $(this).attr('id')=== tWarnModule){
                         $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
+                    }else{
+                        $(this).attr("class","layui-btn layui-btn-sm");
                     }
                 });
+                tWarnModule===""?"":$("#allModule").attr("class","layui-btn layui-btn-sm");
                 tSTime ===""?"":$("#sTime").val(new Date(tSTime).Format("yy-MM-dd"))
                 tETime ===""?"":$("#eTime").val(new Date(tETime).Format("yy-MM-dd"))
                 if (chuliStatus === ""){//全部
@@ -393,7 +395,7 @@
                 }
                 var c = {
                     warnId:tWarnId === ''?logId1:tWarnId,
-                    warnClass:tWarnClass===''?logClass1:tWarnClass,
+                    warnModule:tWarnModule===''?logModule1:tWarnModule,
                     sTime:$("#sTime").val(),
                     eTime:$("#eTime").val()
                 };
@@ -466,7 +468,7 @@
                                 var chang = {
                                     sTime: $("#sTime").val(),
                                     eTime: $("#eTime").val(),
-                                    warnClass:tWarnClass,
+                                    warnModule:tWarnModule,
                                     status: chuliStatus,
                                     warnId:tWarnId
                                 };
@@ -483,7 +485,7 @@
                  change = {
                     sTime: $("#sTime").val(),
                     eTime: $("#eTime").val(),
-                    warnClass:tWarnClass,
+                     warnModule:tWarnModule,
                     warnId:""
                 };
 
@@ -492,7 +494,7 @@
                 change = {
                     sTime: $("#sTime").val(),
                     eTime: $("#eTime").val(),
-                    warnClass:tWarnClass,
+                    warnModule:tWarnModule,
                     warnId:tWarnId,
                     status:0
                 };
@@ -501,7 +503,7 @@
                  change = {
                     sTime: $("#sTime").val(),
                     eTime: $("#eTime").val(),
-                    warnClass:tWarnClass,
+                     warnModule:tWarnModule,
                     warnId:tWarnId,
                     status:1
                 };
@@ -533,7 +535,7 @@
                                 var chang = {
                                     sTime: $("#sTime").val(),
                                     eTime: $("#eTime").val(),
-                                    warnClass:logClass1,
+                                    warnModule:logModule1,
                                     status: chuliStatus,
                                     warnId:logId1
                                 };
@@ -572,19 +574,17 @@
 
     //所有
     function getAll(){
-
+        debugger
         $("#class input[type='text']").each(function(){
-            //if ((logClass1 != "" && $(this).val()===logClass1)||(tWarnClass != "" && $(this).val()===tWarnClass)){
                 $(this).attr("class","layui-btn layui-btn-sm");
-            //}
         });
-        logClass1 = "";
-        tWarnClass = "";
+        logModule1 = "";
+        tWarnModule = "";
         tWarnId = "";
         chuliStatus = "";
         $("#allModule").attr("class","layui-btn layui-btn-sm layui-btn-blue");
         if (htmlPage === '1'){
-            var change = {logClass:"",sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
+            var change = {logModule:"",sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
             load1(change);
             return false;
         }else if(htmlPage === '2'){
@@ -593,7 +593,7 @@
             var change = {
                 sTime: $("#sTime").val(),
                 eTime: $("#eTime").val(),
-                warnClass:"",
+                warnModule:"",
                 warnId:""
             };
             //重新加载table
@@ -604,27 +604,30 @@
 
 
     function getModule(key,value){
-        logClass1 = value;
+        debugger
         $("#class input[type='text']").each(function(){
             if ($(this).val()===value){
                 $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
+            }else{
+                $(this).attr("class","layui-btn layui-btn-sm");
             }
         });
         $("#allModule").attr("class","layui-btn layui-btn-sm");
         chuliStatus = "";
         /*$("#"+key).attr("class","layui-btn layui-btn-sm layui-btn-blue");*/
         if (htmlPage === '1'){
-            var change = {logClass:value,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
-            logClass1 = value;
+            var change = {logModule:key,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
+            logModule1 = key;
             load1(change);
             return false;
         }else if(htmlPage === '2'){
 
         }else if (htmlPage === '3') {
+            tWarnModule = key;
             var change = {
                 sTime: $("#sTime").val(),
                 eTime: $("#eTime").val(),
-                warnClass:value,
+                warnModule:tWarnModule,
                 warnId:""
             };
             //重新加载table
@@ -640,7 +643,7 @@
         //监听搜索框
         form.on('submit(searchSubmit)', function(data){
             if (htmlPage === '1'){
-                var change = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
+                var change = {logModule:logModule1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
                 //重新加载table
                 load1(change);
                 return false;
@@ -652,7 +655,7 @@
                 var change = {
                     sTime: $("#sTime").val(),
                     eTime: $("#eTime").val(),
-                    warnClass:logClass1,
+                    warnModule:logModule1,
                     warnId:""
                 };
                 //重新加载table

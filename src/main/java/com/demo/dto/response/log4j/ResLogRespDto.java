@@ -1,10 +1,12 @@
 package com.demo.dto.response.log4j;
 
+import com.demo.common.Statistics;
 import com.demo.dto.request.log4j.ResLogReqDto;
 import com.demo.dto.response.BaseRespDto;
 import com.demo.pojo.log4j.ResWarn;
 
 import java.util.List;
+import java.util.Map;
 
 public class ResLogRespDto extends BaseRespDto {
     //错误日志数量
@@ -16,7 +18,7 @@ public class ResLogRespDto extends BaseRespDto {
     //查询条件
     private ResLogReqDto resLogReqDto;
     //配置的模块
-    private List<String> logclasses;
+    private List<Statistics.Item> logModules;
 
     public Long getErrCount() {
         return errCount;
@@ -50,12 +52,12 @@ public class ResLogRespDto extends BaseRespDto {
         this.resLogReqDto = resLogReqDto;
     }
 
-    public List<String> getLogclasses() {
-        return logclasses;
+    public List<Statistics.Item> getLogModules() {
+        return logModules;
     }
 
-    public void setLogclasses(List<String> logclasses) {
-        this.logclasses = logclasses;
+    public void setLogModules(List<Statistics.Item> logModules) {
+        this.logModules = logModules;
     }
 
     @Override
@@ -65,7 +67,7 @@ public class ResLogRespDto extends BaseRespDto {
                 ", warnCount=" + warnCount +
                 ", warnList=" + warnList +
                 ", resLogReqDto=" + resLogReqDto +
-                ", logclasses=" + logclasses +
+                ", logModules=" + logModules +
                 '}';
     }
 }

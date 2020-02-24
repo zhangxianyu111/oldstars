@@ -5,7 +5,7 @@
 <mapper namespace="com.demo.dao.log4j.ResWarnMapper">
     <resultMap id="warnResultMap" type="com.demo.pojo.log4j.ResWarn">
         <id column="WARNID" property="warnId" javaType="Long" jdbcType="BIGINT"/>
-        <result column="WARNCLASS" property="warnClass" javaType="String" jdbcType="VARCHAR"/>
+        <result column="WARNMODULE" property="warnModule" javaType="String" jdbcType="VARCHAR"/>
         <result column="WARNMSG" property="warnMsg" javaType="String" jdbcType="VARCHAR"/>
         <result column="WARNSTATUS" property="warnStatus" javaType="int" jdbcType="TINYINT"/>
         <result column="WARNTIME" property="warnTime" javaType="Date" jdbcType="TIMESTAMP"/>
@@ -15,7 +15,7 @@
         <result column="STARTTIME" property="startTime" javaType="Date" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="baseSql" >
-        WARNID,WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLEMSG,HANDLETIME,STARTTIME
+        WARNID,WARNMODULE,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLEMSG,HANDLETIME,STARTTIME
     </sql>
     <select id="selectAll" parameterType="map" resultMap="warnResultMap">
         select
@@ -25,8 +25,8 @@
             <if test="warnId != null">
                 and WARNID = #{warnId}
             </if>
-            <if test="warnClass != null">
-                and WARNCLASS = #{warnClass}
+            <if test="warnModule != null">
+                and WARNMODULE = #{warnModule}
             </if>
             <if test="warnStatus != null">
                 and WARNSTATUS = #{warnStatus}
@@ -48,8 +48,8 @@
             <if test="warnId != null">
                 and WARNID = #{warnId}
             </if>
-            <if test="warnClass != null">
-                and WARNCLASS = #{warnClass}
+            <if test="warnModule != null">
+                and WARNMODULE = #{warnModule}
             </if>
             <if test="warnStatus != null">
                 and WARNSTATUS = #{warnStatus}
@@ -90,8 +90,8 @@
     </delete>
 
     <insert id="insert" parameterType="com.demo.pojo.log4j.ResWarn">
-        insert into reswarn  (WARNCLASS,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME,STARTTIME)
-        VALUES (#{warnClass},#{warnMsg},#{warnStatus},now(),#{handleUser},#{handleTime},#{startTime})
+        insert into reswarn  (WARNMODULE,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME,STARTTIME)
+        VALUES (#{warnModule},#{warnMsg},#{warnStatus},now(),#{handleUser},#{handleTime},#{startTime})
     </insert>
 
 </mapper>

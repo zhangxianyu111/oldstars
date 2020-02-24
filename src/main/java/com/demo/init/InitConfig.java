@@ -5,6 +5,7 @@ import com.demo.controller.log4j.ResLogController;
 import com.demo.quarz.LoggerDBTimer;
 import com.demo.service.LogPointerService;
 import com.demo.util.ExceptionUtil;
+import com.demo.util.LogBuilderUtil;
 import com.demo.util.PropertiesUtil;
 import com.demo.util.XmlUtil;
 import org.apache.log4j.MDC;
@@ -14,6 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author zje
@@ -22,9 +28,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class InitConfig implements ApplicationListener<ContextRefreshedEvent> {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(ResLogController.class);
+    public static final Map<String,Object> MODULEMAP = new HashMap<>();
 
     private volatile static Statistics statistics;
+
+    public InitConfig(){
+        getStatistics();
+    }
 
     public static Statistics getStatistics(){
         if (statistics == null) {
@@ -33,9 +43,15 @@ public class InitConfig implements ApplicationListener<ContextRefreshedEvent> {
                     try {
                         String warnPath = PropertiesUtil.getProperty("warnPath","logpath.properties");
                         statistics = XmlUtil.getStatistics(warnPath);
+                        if (statistics != null){
+                            Statistics.Moudle moudle = statistics.getMoudle();
+                            List<Statistics.Item> items = moudle.getItems();
+                            for (Statistics.Item item : items) {
+                                MODULEMAP.put(item.getName(),item.getDesc());
+                            }
+                        }
                     }catch (Exception e){
-                        MDC.put("exception",e.getClass().getName());
-                        LOGGER.error(ExceptionUtil.getTrace(e),e);
+                        LogBuilderUtil.recordErrorLogs(e,"resLog",InitConfig.class.getName(),"getStatistics");
                     }
 
                 }

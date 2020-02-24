@@ -14,14 +14,11 @@ public class ResLog {
 
     private String logLevel;
 
-    private String logLine;
-
     private String logException;
 
     private String logMsg;
 
-    //不与数据库关联(文件路径 例如：logcase-2020-02-07.log)
-    private String path;
+    private String moduleName;
 
     public Long getLogId() {
         return logId;
@@ -63,14 +60,6 @@ public class ResLog {
         this.logLevel = logLevel;
     }
 
-    public String getLogLine() {
-        return logLine;
-    }
-
-    public void setLogLine(String logLine) {
-        this.logLine = logLine;
-    }
-
     public String getLogException() {
         return logException;
     }
@@ -87,12 +76,12 @@ public class ResLog {
         this.logMsg = logMsg;
     }
 
-    public String getPath() {
-        return path;
+    public String getModuleName() {
+        return moduleName;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
     }
 
     @Override
@@ -103,10 +92,8 @@ public class ResLog {
                 ", logMethod='" + logMethod + '\'' +
                 ", createTime=" + createTime +
                 ", logLevel='" + logLevel + '\'' +
-                ", logLine='" + logLine + '\'' +
                 ", logException='" + logException + '\'' +
                 ", logMsg='" + logMsg + '\'' +
-                ", path='" + path + '\'' +
                 '}';
     }
 }
