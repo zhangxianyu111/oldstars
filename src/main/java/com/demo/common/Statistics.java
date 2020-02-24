@@ -1,5 +1,7 @@
 package com.demo.common;
 
+import com.demo.util.SpringContextHolder;
+
 import javax.xml.bind.annotation.*;
 import java.util.List;
 
@@ -102,6 +104,7 @@ public class Statistics {
 
         public void setName(String name) {
             this.name = name;
+
         }
         @XmlAttribute(name = "desc")
         public String getDesc() {

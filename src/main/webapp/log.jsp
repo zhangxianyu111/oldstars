@@ -84,6 +84,7 @@
                     </script>
                     <script type="text/html" id="toolbarDemo3">
                         <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="handleCheckData">批量处理</button>
                             <button class="layui-btn layui-btn-sm" lay-event="isAllWarn" id="isAllWarn">全部</button>
                             <button class="layui-btn layui-btn-sm" lay-event="wWarnLogs" id="wWarnLogs">未处理<span id="wCount" style="color: red;font-size: 20px"></span></button>
                             <button class="layui-btn layui-btn-sm" lay-event="yWarnLogs" id="yWarnLogs">已处理<span id="yCount" style="color: greenyellow;font-size: 20px"></span></button>
@@ -107,6 +108,7 @@
 <script>
 
     var id_str = "";
+    var warn_id_str = "";
     var logpage = "";
     var logClass1 = "";
     var logId1 = "";
@@ -120,6 +122,11 @@
     var tETime = "";
     <!--是否弹出告警-->
     var isTan = true;
+    <!-- 处理或未处理 -->
+    var chuliStatus = "";
+
+    <!-- error or warn -->
+    var isAll = "";
 
     layui.use(['table','element'], function () {  // 引入 table模块
         var element = layui.element;
@@ -193,6 +200,19 @@
                         $(this).text("警告")
                     }
                 });
+                if (isAll === ""){//全部日志
+                    $("#allLog").attr("class","layui-btn layui-btn-sm layui-btn-blue");
+                    $("#errLog").attr("class","layui-btn layui-btn-sm");
+                    $("#warnLog").attr("class","layui-btn layui-btn-sm");
+                }else if (isAll === "0"){//错误日志
+                    $("#allLog").attr("class","layui-btn layui-btn-sm");
+                    $("#errLog").attr("class","layui-btn layui-btn-sm layui-btn-blue");
+                    $("#warnLog").attr("class","layui-btn layui-btn-sm");
+                } else if (isAll === "1") {//警告日志
+                    $("#allLog").attr("class","layui-btn layui-btn-sm");
+                    $("#errLog").attr("class","layui-btn layui-btn-sm");
+                    $("#warnLog").attr("class","layui-btn layui-btn-sm layui-btn-blue");
+                }
                 var c = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("eTime").val(),logLevel:""};
                 $.ajax({
                     type:"post",
@@ -213,7 +233,7 @@
 
                             $("#class").html(str);
                             $("#class input[type='text']").each(function(){
-                                if (logClass1 != "" && $(this).val()===logClass1){
+                                if (logClass1 != "" && $(this).val().toLowerCase()===logClass1.toLowerCase()){
                                     $("#allModule").attr("class","layui-btn layui-btn-sm");
                                     $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
                                 }
@@ -232,7 +252,6 @@
                                         '                <input hidden name=\"eTime2\" id=\"eTime2\" value=\"'+warnTime+'\">\n' +
                                         '                <input hidden name=\"warnId2\" id=\"warnId2\" value=\"'+warnId+'\">\n' +
                                         '                <span>'+content+'</span></div>';
-                                    debugger
                                     parent.layer.open({
                                         id:warnId,
                                         type: 1
@@ -247,20 +266,18 @@
                                         ,content:htmlStr
                                         ,btn: ['查看'] //只是为了演示
                                         ,yes: function(){
+                                            chuliStatus = "0";
                                             tWarnId = warnId;
-                                            tWarnClass = warnClass;
+                                            //tWarnClass = warnClass;
+                                            var strings = warnClass.split(".");
+                                            tWarnClass = strings[strings.length-1];
+                                            tWarnClass = tWarnClass.replace(tWarnClass[0],tWarnClass[0].toLowerCase());
                                             tSTime = startTime;
                                             tETime = warnTime;
                                             parent.layer.closeAll();
                                             element.tabChange('test', "3");
-                                            //layer.close(layer.index);
 
                                         }
-
-                                        //,zIndex: layer.zIndex //重点1
-                                        //,success: function(layero){
-                                            //layer.setTop(layero); //重点2
-                                        //}
                                     });
                                 }
                             }
@@ -288,16 +305,19 @@
                 window.open("<%=basePath%>/log4j/batchDownLoad?ids="+id_str);
             }
             if (obj.event === 'isALL'){
+                isAll = "";
                 var change = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:""};
                 logpage = "";
                 load1(change);
             }
             if (obj.event === 'errLogs'){
+                isAll = "0";
                 var change = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:"ERROR"};
                 logpage = "ERROR";
                 load1(change);
             }
             if (obj.event === 'warnLogs'){
+                isAll = "1";
                 var change = {logClass:logClass1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:"WARN"};
                 logpage = "WARN";
                 load1(change);
@@ -337,8 +357,8 @@
             ,limit: 20 //每页默认显示的数量
             ,method:'post'  //提交方式
             ,cols: [[
-                /*{type:'checkbox', width: 60, fixed: "left"}
-                ,*/{ field: 'warnId',  title: 'ID',  sort: true,width: 80 ,hide:true }
+                {type:'checkbox', width: 60, fixed: "left"}
+                ,{ field: 'warnId',  title: 'ID',  sort: true,width: 80 ,hide:true }
                 ,{ field: 'warnTime',  title: '时间', width: 160,templet: '<div>{{ layui.util.toDateString(d.warnTime, "yyyy-MM-dd HH:mm:ss") }}</div>', align: "left" }
                 ,{ field: 'warnClass',  title: '模块', width: 250,align: "left"  }
                 ,{ field: 'warnMsg',  title: '告警内容',minWidth: 300,align: "left" }
@@ -347,16 +367,30 @@
             ]]
             ,height: 600
             ,done: function(res, curr, count){
-                debugger
                 $("#class input[type='text']").each(function(){
-                    if ((logClass1 != "" && $(this).val()===logClass1)||(tWarnClass != "" && $(this).val()=== tWarnClass)){
+                    if (tWarnClass != "" && $(this).val().toLowerCase()=== tWarnClass.toLowerCase()){
                         $("#allModule").attr("class","layui-btn layui-btn-sm");
                         $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
                     }
                 });
-                debugger
                 tSTime ===""?"":$("#sTime").val(new Date(tSTime).Format("yy-MM-dd"))
                 tETime ===""?"":$("#eTime").val(new Date(tETime).Format("yy-MM-dd"))
+                if (chuliStatus === ""){//全部
+                    //改变颜色
+                    $("#isAllWarn").attr("class","layui-btn layui-btn-sm layui-btn-blue");
+                    $("#wWarnLogs").attr("class","layui-btn layui-btn-sm");
+                    $("#yWarnLogs").attr("class","layui-btn layui-btn-sm");
+                }else if (chuliStatus === "0"){//未处理
+                    //改变颜色
+                    $("#isAllWarn").attr("class","layui-btn layui-btn-sm");
+                    $("#wWarnLogs").attr("class","layui-btn layui-btn-sm layui-btn-blue");
+                    $("#yWarnLogs").attr("class","layui-btn layui-btn-sm");
+                } else if (chuliStatus === "1"){
+                    //改变颜色
+                    $("#isAllWarn").attr("class","layui-btn layui-btn-sm");
+                    $("#wWarnLogs").attr("class","layui-btn layui-btn-sm");
+                    $("#yWarnLogs").attr("class","layui-btn layui-btn-sm layui-btn-blue");
+                }
                 var c = {
                     warnId:tWarnId === ''?logId1:tWarnId,
                     warnClass:tWarnClass===''?logClass1:tWarnClass,
@@ -391,28 +425,84 @@
         table.on('toolbar(demo3)', function(obj) {
             var checkStatus = table.checkStatus(obj.config.id);
             var change;
-            if (obj.event === 'isAllWarn') {
+            if (obj.event === 'handleCheckData') {
+                //批量处理
+                debugger
+                var data = checkStatus.data;
+                var isBreak = false;
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].warnStatus === "1"){
+                            isBreak = true;
+                        }
+                        warn_id_str += data[i].warnId + ',';
+                    }
+                }else{
+                    layer.msg("请勾选后操作");
+                    return false;
+                }
+                if (isBreak){
+                    layer.msg("包含已处理数据，请重新选择")
+                    return false;
+                }
+                warn_id_str = warn_id_str.substr(0, warn_id_str.length-1);
+                layer.confirm('确定批量处理吗？', {
+                    btn: ['确定'] //按钮
+                }, function(){
+                    debugger
+                    var condition = {warnIds:warn_id_str};
+                    $.ajax({
+                        type:"post",
+                        url:"<%=basePath%>warn/handleWarn",
+                        contentType : 'application/json',
+                        async:true,
+                        data:JSON.stringify(condition),
+                        dataType:"json",
+                        success:function(data){
+                            var parseJSON = $.parseJSON(data);
+                            if(data.code=="0"){
+                                layer.close(layer.index);
+                                layer.msg(data.msg);
+                                var chang = {
+                                    sTime: $("#sTime").val(),
+                                    eTime: $("#eTime").val(),
+                                    warnClass:tWarnClass,
+                                    status: chuliStatus,
+                                    warnId:tWarnId
+                                };
+                                load3(chang)
+                            }
+                        }
+                    });
+
+                });
+
+            }if (obj.event === 'isAllWarn') {
+                chuliStatus = "";
+                tWarnId = "";
                  change = {
                     sTime: $("#sTime").val(),
-                    eTime: $("#sTime").val(),
-                    warnClass:logClass1,
+                    eTime: $("#eTime").val(),
+                    warnClass:tWarnClass,
                     warnId:""
                 };
 
             }else if (obj.event === 'wWarnLogs'){
+                chuliStatus = "0";
                 change = {
                     sTime: $("#sTime").val(),
-                    eTime: $("#sTime").val(),
-                    warnClass:logClass1,
-                    warnId:"",
+                    eTime: $("#eTime").val(),
+                    warnClass:tWarnClass,
+                    warnId:tWarnId,
                     status:0
                 };
             }else if (obj.event === 'yWarnLogs'){
+                chuliStatus = "1";
                  change = {
                     sTime: $("#sTime").val(),
-                    eTime: $("#sTime").val(),
-                    warnClass:logClass1,
-                    warnId:"",
+                    eTime: $("#eTime").val(),
+                    warnClass:tWarnClass,
+                    warnId:tWarnId,
                     status:1
                 };
 
@@ -427,21 +517,24 @@
                 layer.confirm('<textarea id="textDemo" rows="10" cols="20"></textarea>', {
                     btn: ['提交'] //按钮
                 }, function(){
+                    var condition = {warnId:data.warnId,content:$("#textDemo").val()};
                     $.ajax({
                         type:"post",
                         url:"<%=basePath%>warn/handleWarn",
+                        contentType : 'application/json',//添加这句话
+                        data:JSON.stringify(condition),
                         async:true,
-                        data:{warnId:data.warnId,content:$("#textDemo").val()},
-                        dataType:"text",
+                        dataType:"json",
                         success:function(data){
-                            debugger
                             var parseJSON = $.parseJSON(data);
                             if(parseJSON.code=="0"){
                                 layer.close(layer.index);
+                                debugger
                                 var chang = {
                                     sTime: $("#sTime").val(),
-                                    eTime: $("#sTime").val(),
+                                    eTime: $("#eTime").val(),
                                     warnClass:logClass1,
+                                    status: chuliStatus,
                                     warnId:logId1
                                 };
                                 load3(chang)
@@ -460,10 +553,9 @@
                     data:{warnId:data.warnId},
                     dataType:"text",
                     success:function(data){
-                        debugger
                         var parseJSON = $.parseJSON(data);
                         if(parseJSON.code=="0"){
-                            layer.alert(data.warnMsg);
+                            layer.alert(parseJSON.singleData.handleMsg);
                         }
                     }
                 });
@@ -482,12 +574,14 @@
     function getAll(){
 
         $("#class input[type='text']").each(function(){
-            if ((logClass1 != "" && $(this).val()===logClass1)||(tWarnClass != "" && $(this).val()===tWarnClass)){
+            //if ((logClass1 != "" && $(this).val()===logClass1)||(tWarnClass != "" && $(this).val()===tWarnClass)){
                 $(this).attr("class","layui-btn layui-btn-sm");
-            }
+            //}
         });
         logClass1 = "";
         tWarnClass = "";
+        tWarnId = "";
+        chuliStatus = "";
         $("#allModule").attr("class","layui-btn layui-btn-sm layui-btn-blue");
         if (htmlPage === '1'){
             var change = {logClass:"",sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
@@ -498,7 +592,7 @@
         }else if (htmlPage === '3') {
             var change = {
                 sTime: $("#sTime").val(),
-                eTime: $("#sTime").val(),
+                eTime: $("#eTime").val(),
                 warnClass:"",
                 warnId:""
             };
@@ -510,7 +604,14 @@
 
 
     function getModule(key,value){
-        debugger
+        logClass1 = value;
+        $("#class input[type='text']").each(function(){
+            if ($(this).val()===value){
+                $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
+            }
+        });
+        $("#allModule").attr("class","layui-btn layui-btn-sm");
+        chuliStatus = "";
         /*$("#"+key).attr("class","layui-btn layui-btn-sm layui-btn-blue");*/
         if (htmlPage === '1'){
             var change = {logClass:value,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:logpage};
@@ -522,8 +623,8 @@
         }else if (htmlPage === '3') {
             var change = {
                 sTime: $("#sTime").val(),
-                eTime: $("#sTime").val(),
-                warnClass:logClass1,
+                eTime: $("#eTime").val(),
+                warnClass:value,
                 warnId:""
             };
             //重新加载table
@@ -546,7 +647,6 @@
             }else if(htmlPage === '2'){
 
             }else{
-                debugger
                 tSTime = $("#sTime").val();
                 tETime = $("#eTime").val();
                 var change = {

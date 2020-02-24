@@ -1,8 +1,12 @@
 package com.demo.util;
 
 import com.demo.common.constant.StatusConstant;
+import com.demo.controller.log4j.ResLogController;
 import com.demo.dto.response.BaseRespDto;
+import org.apache.log4j.MDC;
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -99,6 +103,23 @@ public class LogBuilderUtil {
                 sb.append(DEFAULT_PARAM_SPLITTER).append(this.getParams());
             }
             return sb.toString();
+        }
+
+        /**
+         * 警告日志方法
+         * @param warningMsg警告信息
+         * @param modelName 模块名称
+         * @param className 类名
+         * @param methodName方法名
+         */
+        public void recordWarningLogs(Throwable e,String warningMsg,String modelName,String className,String methodName){
+
+            PropertyConfigurator.configure(getClass().getResource("/").getPath()+"log4j.properties");
+            LoggerFactory.getLogger(ResLogController.class);
+            Logger logger = LoggerFactory.getLogger(modelName.trim()+"_WARN");
+            MDC.put("exception", e.getClass().getName());
+            String eStr = ExceptionUtil.getTrace(e);
+            logger.warn(eStr,e);
         }
 
         public Builder appendParam(String param, boolean value) {

@@ -1,6 +1,7 @@
 package com.demo.dto.request.log4j;
 
 import com.demo.dto.request.BaseReqDto;
+import com.demo.util.SpringContextHolder;
 import com.mchange.lang.LongUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -30,6 +31,12 @@ public class ResWarnReqDto extends BaseReqDto {
     }
 
     public void setWarnClass(String warnClass) {
+        if (SpringContextHolder.existBean(warnClass)){
+            Object bean = SpringContextHolder.getApplicationContext().getBean(warnClass);
+            String classPath = bean.getClass().getName();
+            this.warnClass  = classPath;
+            return;
+        }
         this.warnClass = warnClass;
     }
 
@@ -100,11 +107,11 @@ public class ResWarnReqDto extends BaseReqDto {
         }
         if (StringUtils.isNotBlank(this.sTime) &&
                 StringUtils.isNotBlank(this.sTime.trim())){
-            paramMap.put("createTime",this.sTime.trim()+" 00:00:00");
+            paramMap.put("sTime",this.sTime.trim()+" 00:00:00");
         }
         if (StringUtils.isNotBlank(this.eTime) &&
                 StringUtils.isNotBlank(this.eTime.trim())){
-            paramMap.put("createTime",this.eTime.trim()+" 23:59:59");
+            paramMap.put("eTime",this.eTime.trim()+" 23:59:59");
         }
         if (StringUtils.isNotBlank(this.content) &&
                 StringUtils.isNotBlank(this.content.trim())){

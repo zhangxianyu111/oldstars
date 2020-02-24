@@ -2,7 +2,7 @@
 
 <config>
     <moudle>
-        <item name="com.demo.controller.log4j.ResLogController" desc="log4j日志" warntime="7200" warncount="1" errortime="3600" errorcount="1"></item>
+        <item name="resLogController" desc="log4j日志" warntime="7200" warncount="1" errortime="3600" errorcount="1"></item>
     </moudle>
     <warnmsg>%moudlename%模块%level%日志过多，在%stime%-%etime%内,(错误日志%errorcount%次，警告日志%warncount%次)</warnmsg>
 </config>

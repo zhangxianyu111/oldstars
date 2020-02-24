@@ -22,6 +22,9 @@
         <include refid="baseSql"/>
         from reswarn
         <where>
+            <if test="warnId != null">
+                and WARNID = #{warnId}
+            </if>
             <if test="warnClass != null">
                 and WARNCLASS = #{warnClass}
             </if>
@@ -42,6 +45,9 @@
         count(1)
         from reswarn
         <where>
+            <if test="warnId != null">
+                and WARNID = #{warnId}
+            </if>
             <if test="warnClass != null">
                 and WARNCLASS = #{warnClass}
             </if>
@@ -63,11 +69,11 @@
         HANDLEUSER = #{handleUser},
         HANDLETIME = now()
         <where>
-            <if test="id != null and id != ''">
-                warnId = #{id}
+            <if test="warnId != null and warnId != ''">
+                warnId = #{warnId}
             </if>
-            <if test="ids != null and ids != ''">
-                warnId in (#{ids})
+            <if test="warnIds != null and warnIds != ''">
+                warnId in (#{warnIds})
             </if>
         </where>
 

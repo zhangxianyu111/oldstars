@@ -30,17 +30,18 @@ public class ResWarnServiceImpl implements ResWarnService {
     }
 
     @Override
-    public ResWarnRespDto handle(Long warnId,String content, ResWarnRespDto baseRespDto) {
-        if (warnId == null){
+    public ResWarnRespDto handle(Map<String,Object> paramMap, ResWarnRespDto baseRespDto) {
+        Object id = paramMap.get("warnId");
+        Object ids = paramMap.get("warnIds");
+        if (id == null && ids == null){
             baseRespDto.setCode(StatusConstant.FAIL);
             baseRespDto.setMsg("参数错误");
+        }else if (ids != null){
+            paramMap.put("content","批量处理");
         }
-        Map<String,Object> param = new HashMap<>();
-        param.put("id",warnId);
-        param.put("content",content);
-        param.put("handleUser","");//待新增
-        param.put("warnStatus",1);
-        resWarnDao.handle(param);
+        paramMap.put("handleUser","");//待新增
+        paramMap.put("warnStatus",1);
+        resWarnDao.handle(paramMap);
         baseRespDto.setCode(StatusConstant.SUCCESS);
         baseRespDto.setMsg("处理成功");
         return baseRespDto;

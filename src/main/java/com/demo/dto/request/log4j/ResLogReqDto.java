@@ -1,6 +1,7 @@
 package com.demo.dto.request.log4j;
 
 import com.demo.dto.request.BaseReqDto;
+import com.demo.util.SpringContextHolder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -21,6 +22,12 @@ public class ResLogReqDto extends BaseReqDto {
     }
 
     public void setLogClass(String logClass) {
+        if (SpringContextHolder.existBean(logClass)){
+            Object bean = SpringContextHolder.getApplicationContext().getBean(logClass);
+            String classPath = bean.getClass().getName();
+            this.logClass  = classPath;
+            return;
+        }
         this.logClass = logClass;
     }
 

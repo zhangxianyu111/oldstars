@@ -9,10 +9,7 @@ import com.demo.init.InitConfig;
 import com.demo.pojo.QrtzJobDetails;
 import com.demo.pojo.log4j.ResWarn;
 import com.demo.service.QrtzJobDetailsService;
-import com.demo.util.DateUtil;
-import com.demo.util.ExceptionUtil;
-import com.demo.util.LogBuilderUtil;
-import com.demo.util.QuartzUtil;
+import com.demo.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.MDC;
 import org.quartz.*;
@@ -58,6 +55,14 @@ public class ResWarnDBTimer {
         for (Statistics.Item item : items) {
             Long warnCount = item.getWarnCount();
             String className = item.getName();
+            if (SpringContextHolder.existBean(className)){
+                Object bean = SpringContextHolder.getApplicationContext().getBean(className);
+                String classPath = bean.getClass().getName();
+                className = classPath;
+            }else{
+                logger.error("获取bean"+className+"失败！！");
+                continue;
+            }
             Long errorCount = item.getErrorCount();
             ConfigScheduleWarnLog(warnMsg, warnCount,errorCount, className);
         }

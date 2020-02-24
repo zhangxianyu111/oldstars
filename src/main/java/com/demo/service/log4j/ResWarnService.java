@@ -9,7 +9,7 @@ public interface ResWarnService {
 
     ResWarnRespDto selectAllByPage(Map map, ResWarnRespDto baseRespDto);
 
-    ResWarnRespDto handle(Long warnId,String content, ResWarnRespDto baseRespDto);
+    ResWarnRespDto handle(Map<String,Object> paramMap, ResWarnRespDto baseRespDto);
 
     ResWarnRespDto seeWarn(Long warnId, ResWarnRespDto baseRespDto);
 

@@ -5,6 +5,7 @@ import com.demo.common.constant.StatusConstant;
 import com.demo.dto.request.log4j.ResWarnReqDto;
 import com.demo.dto.response.BaseRespDto;
 import com.demo.dto.response.log4j.ResWarnRespDto;
+import com.demo.quarz.ResWarnDBTimer;
 import com.demo.service.log4j.ResWarnService;
 import com.demo.util.ExceptionUtil;
 import com.demo.util.LogBuilderUtil;
@@ -23,6 +24,8 @@ public class ResWarnController {
     private final Logger LOGGER = LoggerFactory.getLogger(ResLogController.class);
     @Resource
     private ResWarnService resWarnService;
+    @Resource
+    private ResWarnDBTimer resWarnDBTimer;
 
     /**
      * 查看
@@ -68,11 +71,11 @@ public class ResWarnController {
      */
     @ResponseBody
     @RequestMapping(value = "/handleWarn",method = RequestMethod.POST)
-    public BaseRespDto handleWarn(@RequestParam("warnId") Long warnId,@RequestParam("content") String  content){
-        LOGGER.info(LogBuilderUtil.getBuilder("handleWarn","处理或批量处理告警信息","开始").appendParam("参数",warnId).build());
+    public BaseRespDto handleWarn(@RequestBody ResWarnReqDto reqDto){
+        LOGGER.info(LogBuilderUtil.getBuilder("handleWarn","处理或批量处理告警信息","开始").appendParam("参数",reqDto).build());
         ResWarnRespDto baseRespDto = new ResWarnRespDto();
         try {
-            baseRespDto = resWarnService.handle(warnId,content,baseRespDto);
+            baseRespDto = resWarnService.handle(reqDto.getMap(),baseRespDto);
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LOGGER.info(LogBuilderUtil.getBuilder("handleWarn","处理或批量处理告警信息","结束").appendParam("响应结果",baseRespDto).build());
         }catch(Exception e){
@@ -104,5 +107,27 @@ public class ResWarnController {
         }
         return baseRespDto;
     }
+
+    /**
+     * 同步更新
+     * @return
+     */
+    /*@ResponseBody
+    @RequestMapping(value = "/synchronousGengx",method = RequestMethod.POST)
+    public BaseRespDto SynchronousGengx(){
+        ResWarnRespDto baseRespDto = new ResWarnRespDto();
+        try {
+            resWarnDBTimer.checkResWarn();
+            baseRespDto.setCode(StatusConstant.SUCCESS);
+            baseRespDto.setMsg("同步更新成功");
+        }catch (Exception e){
+            MDC.put("exception", e.getClass().getName());
+            baseRespDto.setCode(StatusConstant.FAIL);
+            baseRespDto.setMsg("同步更新失败");
+            String eStr = ExceptionUtil.getTrace(e);
+            LOGGER.error(eStr,e);
+        }
+        return baseRespDto;
+    } */
 
 }
