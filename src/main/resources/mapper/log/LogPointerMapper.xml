@@ -9,13 +9,21 @@
     <sql id="baseSql" >
         pointer
     </sql>
-    <update id="update" parameterType="java.lang.Long">
+    <update id="update" parameterType="java.lang.Long" databaseId="mysql">
         update log_pointer set pointer = #{pointer}
     </update>
-    <select id="select" parameterType="java.lang.Long" resultMap="logResultMap">
+    <update id="update" parameterType="java.lang.Long" databaseId="postgresql">
+        update public.log_pointer set pointer = #{pointer}
+    </update>
+    <select id="select" parameterType="java.lang.Long" resultMap="logResultMap" databaseId="mysql">
         select
         <include refid="baseSql"/>
         from log_pointer
+    </select>
+    <select id="select" parameterType="java.lang.Long" resultMap="logResultMap" databaseId="postgresql">
+        select
+        <include refid="baseSql"/>
+        from public.log_pointer
     </select>
 
 </mapper>

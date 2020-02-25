@@ -17,7 +17,10 @@
     <sql id="baseSql" >
         WARNID,WARNMODULE,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLEMSG,HANDLETIME,STARTTIME
     </sql>
-    <select id="selectAll" parameterType="map" resultMap="warnResultMap">
+    <sql id="basePostgreSql" >
+        "WARNID","WARNMODULE","WARNMSG","WARNSTATUS","WARNTIME","HANDLEUSER","HANDLEMSG","HANDLETIME","STARTTIME"
+    </sql>
+    <select id="selectAll" parameterType="map" resultMap="warnResultMap" databaseId="mysql">
         select
         <include refid="baseSql"/>
         from reswarn
@@ -40,7 +43,30 @@
         </where>
         order by WARNTIME desc
     </select>
-    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long">
+    <select id="selectAll" parameterType="map" resultMap="warnResultMap" databaseId="postgresql">
+        select
+        <include refid="basePostgreSql"/>
+        from public.reswarn
+        <where>
+            <if test="warnId != null">
+                and "WARNID" = #{warnId}
+            </if>
+            <if test="warnModule != null">
+                and "WARNMODULE" = #{warnModule}
+            </if>
+            <if test="warnStatus != null">
+                and "WARNSTATUS" = #{warnStatus}
+            </if>
+            <if test="sTime != null">
+                and "WARNTIME" <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
+            </if>
+            <if test="eTime != null">
+                and "WARNTIME" <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
+            </if>
+        </where>
+        order by "WARNTIME" desc
+    </select>
+    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long" databaseId="mysql">
         select
         count(1)
         from reswarn
@@ -62,35 +88,82 @@
             </if>
         </where>
     </select>
-    <update id="handle" parameterType="map" >
-        update reswarn set
-        WARNSTATUS = #{warnStatus},
-        HANDLEMSG = #{warnMsg},
-        HANDLEUSER = #{handleUser},
-        HANDLETIME = now()
+    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long" databaseId="postgresql">
+        select
+        count(1)
+        from public.reswarn
         <where>
-            <if test="warnId != null and warnId != ''">
-                warnId = #{warnId}
+            <if test="warnId != null">
+                and "WARNID" = #{warnId}
             </if>
-            <if test="warnIds != null and warnIds != ''">
-                warnId in (#{warnIds})
+            <if test="warnModule != null">
+                and "WARNMODULE" = #{warnModule}
+            </if>
+            <if test="warnStatus != null">
+                and "WARNSTATUS" = #{warnStatus}
+            </if>
+            <if test="sTime != null">
+                and "WARNTIME" <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
+            </if>
+            <if test="eTime != null">
+                and "WARNTIME" <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
         </where>
-
+    </select>
+    <update id="handle" parameterType="map" databaseId="mysql">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update public.reswarn
+            <set>
+                WARNSTATUS = #{item.warnStatus},
+                HANDLEMSG = #{item.warnMsg},
+                HANDLEUSER = #{item.handleUser},
+                HANDLETIME = now()
+            </set>
+            where WARNID = #{item.warnId}
+        </foreach>
     </update>
-    <select id="seeWarn" parameterType="map" resultMap="warnResultMap">
+
+    <update id="handle" parameterType="list" databaseId="postgresql">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update public.reswarn
+            <set>
+                "WARNSTATUS" = #{item.warnStatus},
+                "HANDLEMSG" = #{item.warnMsg},
+                "HANDLEUSER" = #{item.handleUser},
+                "HANDLETIME" = now()
+            </set>
+            where "WARNID" = #{item.warnId}
+        </foreach>
+    </update>
+    <select id="seeWarn" parameterType="map" resultMap="warnResultMap" databaseId="mysql">
         select
         <include refid="baseSql"/>
         from reswarn
         where WARNID = #{warnId}
     </select>
 
-    <delete id="deleteWarnExpire" >
-        delete from resconfig where WARNTIME &lt; DATE_SUB(CURDATE(),INTERVAL 3 month );
+    <select id="seeWarn" parameterType="map" resultMap="warnResultMap" databaseId="postgresql">
+        select
+        <include refid="basePostgreSql"/>
+        from public.reswarn
+        where "WARNID" = #{warnId}
+    </select>
+
+    <delete id="deleteWarnExpire" databaseId="mysql">
+        delete from reswarn where WARNTIME <![CDATA[ < ]]> DATE_SUB(CURDATE(),INTERVAL 3 month );
     </delete>
 
-    <insert id="insert" parameterType="com.demo.pojo.log4j.ResWarn">
+    <delete id="deleteWarnExpire" databaseId="postgresql">
+        delete from public.reswarn where "WARNTIME"  <![CDATA[ < ]]>  DATE(TO_CHAR(CURRENT_DATE + INTERVAL '-3 MONTH','YYYY-MM-DD'));
+    </delete>
+
+    <insert id="insert" parameterType="com.demo.pojo.log4j.ResWarn" databaseId="mysql">
         insert into reswarn  (WARNMODULE,WARNMSG,WARNSTATUS,WARNTIME,HANDLEUSER,HANDLETIME,STARTTIME)
+        VALUES (#{warnModule},#{warnMsg},#{warnStatus},now(),#{handleUser},#{handleTime},#{startTime})
+    </insert>
+
+    <insert id="insert" parameterType="com.demo.pojo.log4j.ResWarn" databaseId="postgresql">
+        insert into public.reswarn  ("WARNMODULE","WARNMSG","WARNSTATUS","WARNTIME","HANDLEUSER","HANDLETIME","STARTTIME")
         VALUES (#{warnModule},#{warnMsg},#{warnStatus},now(),#{handleUser},#{handleTime},#{startTime})
     </insert>
 

@@ -97,7 +97,7 @@ public class ResWarnReqDto extends BaseReqDto {
         }
         if (StringUtils.isNotBlank(this.status) &&
                 StringUtils.isNotBlank(this.status.trim())){
-            paramMap.put("warnStatus",this.status.trim());
+            paramMap.put("warnStatus",Integer.valueOf(this.status.trim()));
         }
         if (StringUtils.isNotBlank(this.sTime) &&
                 StringUtils.isNotBlank(this.sTime.trim())){

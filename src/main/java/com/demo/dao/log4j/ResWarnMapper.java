@@ -12,7 +12,7 @@ public interface ResWarnMapper {
 
     Long selectAllCount(Map paramMap);
 
-    void handle(Map map);
+    void handle(List<ResWarn> resWarns);
 
     ResWarn seeWarn(Map map);
 

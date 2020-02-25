@@ -50,7 +50,7 @@
     <!--##### 数据库连接池配置 ##### -->
     <bean id="dataSource"
           class="com.demo.dynamicdatasource.DynamicDataSource">
-        <property name="defaultTargetDataSource" ref="mysqlDS" /><!--设置默认数据源 -->
+        <property name="defaultTargetDataSource" ref="postgresqlDS" /><!--设置默认数据源 -->
         <property name="targetDataSources"><!--设置多个数据源 -->
             <map>
                 <entry key="mysqlDataSource" value-ref="mysqlDS" />
@@ -172,7 +172,7 @@
           class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="properties">
             <props>
-                <prop key="PostGresSQL">postgressql</prop>
+                <prop key="PostgreSQL">postgresql</prop>
                 <prop key="MySQL">mysql</prop>
             </props>
         </property>

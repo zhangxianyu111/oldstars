@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ResLogReqDto extends BaseReqDto {
     //模块
-    private String moduleName;
+    private String logModule;
     //日志级别
     private String logLevel;
     //起始时间
@@ -17,12 +17,12 @@ public class ResLogReqDto extends BaseReqDto {
     //结束时间
     private String eTime;
 
-    public String getModuleName() {
-        return moduleName;
+    public String getLogModule() {
+        return logModule;
     }
 
-    public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
+    public void setLogModule(String logModule) {
+        this.logModule = logModule;
     }
 
     public String getLogLevel() {
@@ -51,9 +51,9 @@ public class ResLogReqDto extends BaseReqDto {
 
     public Map getMap(){
         Map<String,Object> paramMap = new HashMap<>();
-        if (StringUtils.isNotBlank(this.moduleName) &&
-        StringUtils.isNotBlank(this.moduleName.trim())){
-            paramMap.put("moduleName",this.moduleName.trim());
+        if (StringUtils.isNotBlank(this.logModule) &&
+        StringUtils.isNotBlank(this.logModule.trim())){
+            paramMap.put("moduleName",this.logModule.trim());
         }
         if (StringUtils.isNotBlank(this.logLevel) &&
         StringUtils.isNotBlank(this.logLevel.trim())){
@@ -75,7 +75,7 @@ public class ResLogReqDto extends BaseReqDto {
     @Override
     public String toString() {
         return "ResLogReqDto{" +
-                "moduleName='" + moduleName + '\'' +
+                "logModule='" + logModule + '\'' +
                 ", logLevel='" + logLevel + '\'' +
                 '}';
     }

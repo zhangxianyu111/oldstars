@@ -6,7 +6,7 @@ public class ResLog {
 
     private Long logId;
 
-    private String logClass;
+    private String logModule;
 
     private String logMethod;
 
@@ -28,12 +28,12 @@ public class ResLog {
         this.logId = logId;
     }
 
-    public String getLogClass() {
-        return logClass;
+    public String getLogModule() {
+        return logModule;
     }
 
-    public void setLogClass(String logClass) {
-        this.logClass = logClass;
+    public void setLogModule(String logModule) {
+        this.logModule = logModule;
     }
 
     public String getLogMethod() {
@@ -88,7 +88,7 @@ public class ResLog {
     public String toString() {
         return "ResLog{" +
                 "logId=" + logId +
-                ", logClass='" + logClass + '\'' +
+                ", logModule='" + logModule + '\'' +
                 ", logMethod='" + logMethod + '\'' +
                 ", createTime=" + createTime +
                 ", logLevel='" + logLevel + '\'' +

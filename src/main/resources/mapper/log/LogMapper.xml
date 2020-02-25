@@ -14,10 +14,13 @@
     <sql id="baseSql" >
         id,module,log_title,log_desc,log_date,create_date
     </sql>
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.demo.pojo.ErrorLogInfo">
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.demo.pojo.ErrorLogInfo" databaseId="mysql">
         insert into error_log_info(module,log_title,log_desc,log_date,create_date) values(#{module},#{logTitle},#{logDesc},#{logDate},now())
     </insert>
-    <delete id="delete" parameterType="map">
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.demo.pojo.ErrorLogInfo" databaseId="postgresql">
+        insert into public.error_log_info(module,log_title,log_desc,log_date,create_date) values(#{module},#{logTitle},#{logDesc},#{logDate},now())
+    </insert>
+    <delete id="delete" parameterType="map" databaseId="mysql">
         delete from error_log_info
         <where>
             <if test="id != null">
@@ -28,7 +31,18 @@
             </if>
         </where>
     </delete>
-    <update id="update" parameterType="com.demo.pojo.ErrorLogInfo">
+    <delete id="delete" parameterType="map" databaseId="postgresql">
+        delete from publicerror_log_info
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="module != null">
+                and module = #{module}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="com.demo.pojo.ErrorLogInfo" databaseId="mysql">
         update error_log_info
         <set>
             <if test="module != null">
@@ -46,40 +60,94 @@
         </set>
         where id = #{id}
     </update>
-    <select id="selectById" parameterType="java.lang.Long" resultMap="logResultMap">
+    <update id="update" parameterType="com.demo.pojo.ErrorLogInfo" databaseId="postgresql">
+        update public.error_log_info
+        <set>
+            <if test="module != null">
+                module = #{module},
+            </if>
+            <if test="logTitle != null">
+                log_title = #{logTitle},
+            </if>
+            <if test="logDesc != null">
+                log_desc = #{logDesc},
+            </if>
+            <if test="logDate != null">
+                log_date = #{logDate},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="logResultMap" databaseId="mysql">
         select
         <include refid="baseSql"/>
         from error_log_info where id = #{id}
     </select>
-    <select id="selectAll" parameterType="map" resultMap="logResultMap">
+    <select id="selectById" parameterType="java.lang.Long" resultMap="logResultMap" databaseId="postgresql">
+        select
+        <include refid="baseSql"/>
+        from public.error_log_info where id = #{id}
+    </select>
+    <select id="selectAll" parameterType="map" resultMap="logResultMap" databaseId="mysql">
         select
         <include refid="baseSql"/>
         from error_log_info
         <where>
             <if test="module != null">
-                and module like concat('%',#{module},"%")
+                and module like concat('%',#{module},'%')
             </if>
             <if test="logDate != null">
-                and log_date like concat('%',#{logDate},"%")
+                and log_date like concat('%',#{logDate},'%')
             </if>
         </where>
         order by log_date desc
     </select>
-    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long">
+    <select id="selectAll" parameterType="map" resultMap="logResultMap" databaseId="postgresql">
+        select
+        <include refid="baseSql"/>
+        from public.error_log_info
+        <where>
+            <if test="module != null">
+                and module like concat('%',#{module},'%')
+            </if>
+            <if test="logDate != null">
+                and log_date like concat('%',#{logDate},'%')
+            </if>
+        </where>
+        order by log_date desc
+    </select>
+    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long" databaseId="mysql">
         select
         count(1)
         from error_log_info
         <where>
             <if test="module != null">
-                and module like concat('%',#{module},"%")
+                and module like concat('%',#{module},'%')
             </if>
             <if test="logDate != null">
-                and log_date like concat('%',#{logDate},"%")
+                and log_date like concat('%',#{logDate},'%')
             </if>
         </where>
     </select>
-    <delete id="deleteExpire" >
-        delete from error_log_info where create_date &lt; DATE_SUB(CURDATE(),INTERVAL 3 month );
+    <select id="selectAllCount" parameterType="map" resultType="java.lang.Long" databaseId="postgresql">
+        select
+        count(1)
+        from public.error_log_info
+        <where>
+            <if test="module != null">
+                and module like concat('%',#{module},'%')
+            </if>
+            <if test="logDate != null">
+                and log_date like concat('%',#{logDate},'%')
+            </if>
+        </where>
+    </select>
+    <delete id="deleteExpire" databaseId="mysql">
+        delete from error_log_info where create_date <![CDATA[ < ]]> DATE_SUB(CURDATE(),INTERVAL 3 month );
+    </delete>
+
+    <delete id="deleteExpire" databaseId="postgresql">
+        delete from public.error_log_info where create_date <![CDATA[ < ]]>DATE(TO_CHAR(CURRENT_DATE + INTERVAL '-3 MONTH','YYYY-MM-DD'));
     </delete>
 
 </mapper>

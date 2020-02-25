@@ -44,8 +44,13 @@ public class ResLogServiceImpl implements ResLogService {
 
     @Override
     public void batchDownLoad(String ids,HttpServletResponse response) throws IOException{
-        List<ResLog> resLogs = resLogDao.selectByIds(ids);
-        String path = "";
+        String[] valueArr = ids.split(",");
+        int[] intArr = new int[valueArr.length];
+        for (int i = 0; i < valueArr.length; i++) {
+            intArr[i] = Integer.parseInt(valueArr[i]);
+        }
+        List<ResLog> resLogs = resLogDao.selectByIds(intArr);
+         String path = "";
         if (resLogs != null && resLogs.size()>0){
             for (ResLog resLog : resLogs) {
                 String property = PropertiesUtil.getProperty("log4j.appender." + resLog.getModuleName() + ".File", "log4j.properties");

@@ -10,6 +10,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +37,30 @@ public class ResWarnServiceImpl implements ResWarnService {
         if (id == null && ids == null){
             baseRespDto.setCode(StatusConstant.FAIL);
             baseRespDto.setMsg("参数错误");
-        }else if (ids != null){
-            paramMap.put("warnMsg","批量处理");
+            return baseRespDto;
+        }else{
+            List<ResWarn> resWarns = new ArrayList<>();
+            ResWarn resWarn;
+            if (ids != null){
+                String[] valueArr = String.valueOf(ids).split(",");
+                for (int i = 0; i < valueArr.length; i++) {
+                    resWarn = new ResWarn();
+                    resWarn.setWarnMsg("批量处理");
+                    resWarn.setWarnStatus(1);
+                    resWarn.setHandleUser("");
+                    resWarn.setWarnId(Long.valueOf(valueArr[i]));
+                    resWarns.add(resWarn);
+                }
+            }else if (id != null){
+                resWarn = new ResWarn();
+                resWarn.setWarnStatus(1);
+                resWarn.setWarnMsg(paramMap.get("warnMsg")==null?"":String.valueOf(paramMap.get("warnMsg")));
+                resWarn.setWarnId(Long.valueOf(id.toString()));
+                resWarns.add(resWarn);
+            }
+            resWarnDao.handle(resWarns);
         }
-        paramMap.put("handleUser","");//待新增
-        paramMap.put("warnStatus",1);
-        resWarnDao.handle(paramMap);
+
         baseRespDto.setCode(StatusConstant.SUCCESS);
         baseRespDto.setMsg("处理成功");
         return baseRespDto;
