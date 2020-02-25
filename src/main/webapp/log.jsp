@@ -236,7 +236,7 @@
 
                             $("#class").html(str);
                             $("#class input[type='text']").each(function(){
-                                if (logModule1 != "" && $(this).val().toLowerCase()===logModule1.toLowerCase()){
+                                if (logModule1 != "" && $(this).attr("id")===logModule1){
                                     $("#allModule").attr("class","layui-btn layui-btn-sm");
                                     $(this).attr("class","layui-btn layui-btn-sm layui-btn-blue");
                                 }
