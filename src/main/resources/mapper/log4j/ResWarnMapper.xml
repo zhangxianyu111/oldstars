@@ -65,7 +65,7 @@
     <update id="handle" parameterType="map" >
         update reswarn set
         WARNSTATUS = #{warnStatus},
-        HANDLEMSG = #{content},
+        HANDLEMSG = #{warnMsg},
         HANDLEUSER = #{handleUser},
         HANDLETIME = now()
         <where>

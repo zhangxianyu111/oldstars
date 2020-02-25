@@ -41,4 +41,49 @@ public class IndexController {
         }
         return "warn-test";
     }
+
+    @ResponseBody
+    @RequestMapping("/testWarn1")
+    public String warnError1(){
+        try {
+            int i = 3/0;
+        }catch (Exception e) {
+            LogBuilderUtil.recordWarnLogs("resWarn测试报错信息","resWarn", ResLogController.class.getName(),"warnError1");
+        }
+        return "warn-test1";
+    }
+
+    @ResponseBody
+    @RequestMapping("/testError1")
+    public String warnTest1(){
+        try {
+            int i = 3/0;
+        }catch (Exception e) {
+            LogBuilderUtil.recordErrorLogs(e,"resWarn", ResLogController.class.getName(),"warnTest1");
+        }
+        return "error-test1";
+    }
+
+
+    @ResponseBody
+    @RequestMapping("/testError3")
+    public String errorTest3(){
+        try {
+            int i = 3/0;
+        }catch (Exception e) {
+            LogBuilderUtil.recordErrorLogs(e,"test", ResLogController.class.getName(),"errorTest3");
+        }
+        return "error-test3";
+    }
+
+    @ResponseBody
+    @RequestMapping("/testWarn3")
+    public String warnTest3(){
+        try {
+            int i = 3/0;
+        }catch (Exception e) {
+            LogBuilderUtil.recordWarnLogs("warn测试报错信息","test", ResLogController.class.getName(),"warnTest3");
+        }
+        return "warn-test3";
+    }
 }

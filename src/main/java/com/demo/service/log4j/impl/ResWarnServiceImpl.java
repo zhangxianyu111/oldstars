@@ -37,7 +37,7 @@ public class ResWarnServiceImpl implements ResWarnService {
             baseRespDto.setCode(StatusConstant.FAIL);
             baseRespDto.setMsg("参数错误");
         }else if (ids != null){
-            paramMap.put("content","批量处理");
+            paramMap.put("warnMsg","批量处理");
         }
         paramMap.put("handleUser","");//待新增
         paramMap.put("warnStatus",1);

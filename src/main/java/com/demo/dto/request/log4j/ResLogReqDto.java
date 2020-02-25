@@ -61,11 +61,11 @@ public class ResLogReqDto extends BaseReqDto {
         }
         if (StringUtils.isNotBlank(this.sTime) &&
                 StringUtils.isNotBlank(this.sTime.trim())){
-            paramMap.put("sTime",this.sTime.trim()+" 00:00:00");
+            paramMap.put("sTime",this.sTime.trim());
         }
         if (StringUtils.isNotBlank(this.eTime) &&
                 StringUtils.isNotBlank(this.eTime.trim())){
-            paramMap.put("eTime",this.eTime.trim()+" 23:59:59");
+            paramMap.put("eTime",this.eTime.trim());
         }
         paramMap.put("page",this.getPage());
         paramMap.put("limit",this.getLimit());

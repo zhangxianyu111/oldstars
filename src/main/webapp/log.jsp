@@ -118,7 +118,6 @@
     <!-- 跳转页面参数 -->
     var tWarnId = "";
     var tWarnModule = "";
-    var tWarnModuleName = "";
     var tSTime = "";
     var tETime = "";
     <!--是否弹出告警-->
@@ -129,10 +128,11 @@
     <!-- error or warn -->
     var isAll = "";
 
-    layui.use(['table','element'], function () {  // 引入 table模块
+    layui.use(['table','element','util'], function () {  // 引入 table模块
         var element = layui.element;
         var table = layui.table
-            ,form = layui.form;
+            ,form = layui.form,
+            util = layui.util;
         element.on('tab(test)', function(data){
             if(data.index==0){//日志查询
                 htmlPage = "1";
@@ -150,8 +150,10 @@
             }else if(data.index==2){//日志告警
                 htmlPage = "3";
                 var change = {
-                    sTime: tSTime === ""?$("#sTime").val():new Date(tSTime).Format("yyyy-MM-dd"),
-                    eTime: tETime === ""?$("#eTime").val():new Date(tETime).Format("yyyy-MM-dd"),
+                    //sTime: tSTime === ""?$("#sTime").val():new Date(tSTime).Format("yyyy-MM-dd HH:mm:ss"),
+                    sTime: tSTime === ""?$("#sTime").val():util.toDateString(tSTime , 'yyyy-MM-dd HH:mm:ss'),
+                    //eTime: tETime === ""?$("#eTime").val():new Date(tETime).Format("yyyy-MM-dd HH:mm:ss"),
+                    eTime: tETime === ""?$("#eTime").val():util.toDateString(tETime , 'yyyy-MM-dd HH:mm:ss'),
                     warnModule: tWarnModule === ""?logModule1:tWarnModule,
                     warnId: tWarnId === ""?logId1:tWarnId
                 };
@@ -213,7 +215,7 @@
                     $("#errLog").attr("class","layui-btn layui-btn-sm");
                     $("#warnLog").attr("class","layui-btn layui-btn-sm layui-btn-blue");
                 }
-                var c = {logModule:logModule1,sTime:$("#sTime").val(),eTime:$("eTime").val(),logLevel:""};
+                var c = {logModule:logModule1,sTime:$("#sTime").val(),eTime:$("#eTime").val(),logLevel:""};
                 $.ajax({
                     type:"post",
                     url:"<%=basePath%>log4j/selectModule",
@@ -267,12 +269,12 @@
                                         ,content:htmlStr
                                         ,btn: ['查看'] //只是为了演示
                                         ,yes: function(){
+                                            debugger
                                             chuliStatus = "0";
                                             tWarnId = warnId;
                                             tWarnModule = warnModule;
                                             tSTime = startTime;
-                                            tETime = warnTime;
-                                            tWarnModuleName =
+                                            tETime = startTime+24*60*60*1000;
                                             parent.layer.closeAll();
                                             element.tabChange('test', "3");
 
@@ -377,8 +379,8 @@
                     }
                 });
                 tWarnModule===""?"":$("#allModule").attr("class","layui-btn layui-btn-sm");
-                tSTime ===""?"":$("#sTime").val(new Date(tSTime).Format("yy-MM-dd"))
-                tETime ===""?"":$("#eTime").val(new Date(tETime).Format("yy-MM-dd"))
+                tSTime ===""?"":$("#sTime").val(util.toDateString(tSTime , 'yyyy-MM-dd HH:mm:ss'));
+                tETime ===""?"":$("#eTime").val(util.toDateString(tETime , 'yyyy-MM-dd HH:mm:ss'));
                 if (chuliStatus === ""){//全部
                     //改变颜色
                     $("#isAllWarn").attr("class","layui-btn layui-btn-sm layui-btn-blue");
@@ -437,7 +439,7 @@
                 var isBreak = false;
                 if (data.length > 0) {
                     for (var i = 0; i < data.length; i++) {
-                        if (data[i].warnStatus === "1"){
+                        if (data[i].warnStatus == 1){
                             isBreak = true;
                         }
                         warn_id_str += data[i].warnId + ',';
@@ -519,6 +521,10 @@
             var data = obj.data //获得当前行数据
             layEvent = obj.event; //获得 lay-event 对应的值
             if (layEvent === 'chuli') {
+                if (data.warnStatus == 1){
+                    layer.msg("已处理，请重新选择")
+                    return false;
+                }
                 layer.confirm('<textarea id="textDemo" rows="10" cols="20"></textarea>', {
                     btn: ['提交'] //按钮
                 }, function(){
@@ -531,16 +537,16 @@
                         async:true,
                         dataType:"json",
                         success:function(data){
-                            var parseJSON = $.parseJSON(data);
-                            if(parseJSON.code=="0"){
+                            //var parseJSON = $.parseJSON(data);
+                            if(data.code=="0"){
                                 layer.close(layer.index);
                                 debugger
                                 var chang = {
                                     sTime: $("#sTime").val(),
                                     eTime: $("#eTime").val(),
-                                    warnModule:logModule1,
+                                    warnModule:tWarnModule,
                                     status: chuliStatus,
-                                    warnId:logId1
+                                    warnId:tWarnId
                                 };
                                 load3(chang)
                             }
@@ -716,10 +722,14 @@
         var laydate = layui.laydate;
         //执行一个laydate实例
         laydate.render({
-            elem: '#sTime' //指定元素
+            elem: '#sTime', //指定元素
+            type:'datetime', // 可选择：年、月、日、时、分、秒
+            format: 'yyyy-MM-dd HH:mm:ss' //指定时间格式
         });
         laydate.render({
-            elem: '#eTime' //指定元素
+            elem: '#eTime', //指定元素
+            type:'datetime', // 可选择：年、月、日、时、分、秒
+            format: 'yyyy-MM-dd HH:mm:ss'
         });
     });
 </script>
