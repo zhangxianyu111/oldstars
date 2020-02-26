@@ -1,6 +1,5 @@
 package com.demo.util;
 
-import com.demo.quarz.LoggerDBTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ public class PropertiesUtil {
             //第二种，通过类进行获取properties文件流
             props.load(in);
         } catch (FileNotFoundException e) {
-            logger.error("logpath.properties文件未找到");
+            logger.error("module-xml.properties文件未找到");
         } catch (IOException e) {
             logger.error("出现IOException");
         } finally {
@@ -36,7 +35,7 @@ public class PropertiesUtil {
                     in.close();
                 }
             } catch (IOException e) {
-                logger.error("logpath.properties文件流关闭出现异常");
+                logger.error("module-xml.properties文件流关闭出现异常");
             }
         }
         logger.info("加载properties文件内容完成...........");
@@ -72,7 +71,7 @@ public class PropertiesUtil {
             //}
             URL uri = PropertiesUtil.class.getResource("/");
             File file = new File(uri.toURI());
-            String pathname = file.getAbsolutePath() + "/logpath.properties";
+            String pathname = file.getAbsolutePath() + "/module-xml.properties";
             file = new File(pathname);
             //保存属性到b.properties文件
             FileOutputStream fileOutputStream = new FileOutputStream(file,true);//true表示追加打开,false每次都是清空再重写
@@ -83,7 +82,7 @@ public class PropertiesUtil {
         }catch(URISyntaxException e){
             logger.error("web目录获取失败",e);
         }catch (FileNotFoundException e) {
-            logger.error("logpath.properties文件未找到",e);
+            logger.error("module-xml.properties文件未找到",e);
         } catch (IOException e) {
             logger.error("出现IOException",e);
         } finally {
@@ -91,7 +90,7 @@ public class PropertiesUtil {
                 try {
                     outputStreamWriter.close();
                 } catch (IOException e) {
-                    logger.error("logpath.properties文件流关闭出现异常",e);
+                    logger.error("module-xml.properties文件流关闭出现异常",e);
                 }
             }
         }

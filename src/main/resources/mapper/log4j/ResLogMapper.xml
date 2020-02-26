@@ -4,20 +4,20 @@
 
 <mapper namespace="com.demo.dao.log4j.ResLogMapper">
     <resultMap id="logResultMap" type="com.demo.pojo.log4j.ResLog">
-        <id column="LOGID" property="logId" javaType="Long" jdbcType="BIGINT"/>
-        <result column="CLASS" property="logModule" javaType="String" jdbcType="VARCHAR"/>
-        <result column="METHOD" property="logMethod" javaType="String" jdbcType="VARCHAR"/>
-        <result column="CREATETIME" property="createTime" javaType="Date" jdbcType="TIMESTAMP"/>
-        <result column="LOGLEVEL" property="logLevel" javaType="String" jdbcType="VARCHAR"/>
-        <result column="EXCEPTION" property="logException" javaType="String" jdbcType="VARCHAR"/>
-        <result column="MSG" property="logMsg" javaType="String" jdbcType="VARCHAR"/>
-        <result column="MODULENAME" property="moduleName" javaType="String" jdbcType="VARCHAR"/>
+        <id column="log_id" property="logId" javaType="Long" jdbcType="BIGINT"/>
+        <result column="class" property="logModule" javaType="String" jdbcType="VARCHAR"/>
+        <result column="method" property="logMethod" javaType="String" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" javaType="Date" jdbcType="TIMESTAMP"/>
+        <result column="log_level" property="logLevel" javaType="String" jdbcType="VARCHAR"/>
+        <result column="exception" property="logException" javaType="String" jdbcType="VARCHAR"/>
+        <result column="msg" property="logMsg" javaType="String" jdbcType="VARCHAR"/>
+        <result column="module_name" property="moduleName" javaType="String" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="baseSql" >
-        LOGID,CLASS,METHOD,CREATETIME,LOGLEVEL,EXCEPTION,MSG,MODULENAME
+        LOGID as log_id ,CLASS as class ,METHOD as method ,CREATETIME as create_time,LOGLEVEL as log_level,EXCEPTION as exception ,MSG as msg,MODULENAME module_name
     </sql>
     <sql id="basePostgreSql" >
-        "LOGID","CLASS","METHOD","CREATETIME","LOGLEVEL","EXCEPTION","MSG","MODULENAME"
+        log_id,class,method,create_time,log_level,exception,msg,module_name
     </sql>
     <select id="selectAll" parameterType="map" resultMap="logResultMap" databaseId="mysql">
         select
@@ -45,19 +45,19 @@
         from public.reslog
         <where>
             <if test="moduleName != null">
-                and "MODULENAME" like concat('%',#{moduleName},'%')
+                and module_name like concat('%',#{moduleName},'%')
             </if>
             <if test="logLevel != null">
-                and "LOGLEVEL" = #{logLevel}
+                and log_level = #{logLevel}
             </if>
             <if test="sTime != null">
-                and "CREATETIME" <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
+                and create_time <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
             <if test="eTime != null">
-                and "CREATETIME" <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
+                and create_time <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
         </where>
-        order by "CREATETIME" desc
+        order by create_time desc
     </select>
     <select id="selectAllCount" parameterType="map" resultType="java.lang.Long" databaseId="mysql">
         select
@@ -84,16 +84,16 @@
         from public.reslog
         <where>
             <if test="moduleName != null">
-                and "MODULENAME" = #{moduleName}
+                and module_name = #{moduleName}
             </if>
             <if test="logLevel != null">
-                and "LOGLEVEL" = #{logLevel}
+                and log_level = #{logLevel}
             </if>
             <if test="sTime != null">
-                and "CREATETIME" <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
+                and create_time <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
             <if test="eTime != null">
-                and "CREATETIME" <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
+                and create_time <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
         </where>
     </select>
@@ -101,14 +101,14 @@
     <select id="selectById" parameterType="java.lang.Long" resultMap="logResultMap" databaseId="mysql">
         select
         <include refid="baseSql"/>
-        from public.reslog
+        from reslog
         where LOGID = #{logId}
     </select>
     <select id="selectById" parameterType="java.lang.Long" resultMap="logResultMap" databaseId="postgresql">
         select
         <include refid="basePostgreSql"/>
-        from reslog
-        where "LOGID" = #{logId}
+        from public.reslog
+        where log_id = #{logId}
     </select>
     <select id="selectByIds" parameterType="java.lang.String" resultMap="logResultMap" databaseId="mysql">
         select
@@ -124,7 +124,7 @@
         select
         <include refid="basePostgreSql"/>
         from public.reslog
-        where "LOGID" in (
+        where log_id in (
         <foreach collection="ids" item="id" index="index" separator="," >
             #{id,jdbcType=INTEGER}
         </foreach>
@@ -135,7 +135,7 @@
         delete from reslog where CREATETIME <![CDATA[ < ]]> DATE_SUB(CURDATE(),INTERVAL 3 month );
     </delete>
     <delete id="deleteExpire" databaseId="postgresql">
-        delete from public.reslog where "CREATETIME" <![CDATA[ < ]]> DATE(TO_CHAR(CURRENT_DATE + INTERVAL '-3 MONTH','YYYY-MM-DD'))
+        delete from public.reslog where create_time <![CDATA[ < ]]> DATE(TO_CHAR(CURRENT_DATE + INTERVAL '-3 MONTH','YYYY-MM-DD'))
     </delete>
 
 </mapper>

@@ -1,16 +1,11 @@
 package com.demo.init;
 
 import com.demo.common.Statistics;
-import com.demo.controller.log4j.ResLogController;
 import com.demo.quarz.LoggerDBTimer;
 import com.demo.service.LogPointerService;
-import com.demo.util.ExceptionUtil;
 import com.demo.util.LogBuilderUtil;
 import com.demo.util.PropertiesUtil;
 import com.demo.util.XmlUtil;
-import org.apache.log4j.MDC;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -41,7 +36,7 @@ public class InitConfig implements ApplicationListener<ContextRefreshedEvent> {
             synchronized (InitConfig.class) {
                 if (statistics == null) {
                     try {
-                        String warnPath = PropertiesUtil.getProperty("warnPath","logpath.properties");
+                        String warnPath = PropertiesUtil.getProperty("warnPath", "module-xml.properties");
                         statistics = XmlUtil.getStatistics(warnPath);
                         if (statistics != null){
                             Statistics.Moudle moudle = statistics.getMoudle();

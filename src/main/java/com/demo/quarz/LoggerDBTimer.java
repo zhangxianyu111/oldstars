@@ -8,7 +8,6 @@ import com.demo.util.PropertiesUtil;
 import com.demo.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -34,8 +33,8 @@ public class LoggerDBTimer {
     private LogPointerMapper logPointerMapper;
 
     /*static{
-        PropertiesUtil.loadProps("logpath.properties");
-        //pointer = Long.valueOf(XmlUtil.XMLReader2JDOM("logpath.properties"));
+        PropertiesUtil.loadProps("module-xml.properties");
+        //pointer = Long.valueOf(XmlUtil.XMLReader2JDOM("module-xml.properties"));
     }*/
     ExecutorService exec = Executors.newFixedThreadPool(5);
 
@@ -43,7 +42,7 @@ public class LoggerDBTimer {
     //@Scheduled(cron = "0/10 * * * * ?")
     public void Scheduled() throws Exception{
         logger.info("每5分钟开始调用第三方接口查询读取日志任务咯");
-        final File tmpLogFile = new File(PropertiesUtil.getProperty("logpath","logpath.properties"));
+        final File tmpLogFile = new File(PropertiesUtil.getProperty("logpath", "module-xml.properties"));
         realtimeShowLog(tmpLogFile);
         logger.info(dateFormat.format(new Date())+"--调用第三方接口查询读取日志结束");
     }
