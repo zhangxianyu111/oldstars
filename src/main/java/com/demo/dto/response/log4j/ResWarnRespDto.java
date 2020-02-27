@@ -2,12 +2,20 @@ package com.demo.dto.response.log4j;
 
 import com.demo.dto.response.BaseRespDto;
 
-public class ResWarnRespDto extends BaseRespDto {
+public class ResWarnRespDto<T> extends BaseRespDto {
 
     //未处理数量
     private Long untreatedCount;
-    //已处理数量
-    private Long processedCount;
+    //查询条件
+    private T reqDto;
+
+    public T getReqDto() {
+        return reqDto;
+    }
+
+    public void setReqDto(T reqDto) {
+        this.reqDto = reqDto;
+    }
 
     public Long getUntreatedCount() {
         return untreatedCount;
@@ -17,19 +25,11 @@ public class ResWarnRespDto extends BaseRespDto {
         this.untreatedCount = untreatedCount;
     }
 
-    public Long getProcessedCount() {
-        return processedCount;
-    }
-
-    public void setProcessedCount(Long processedCount) {
-        this.processedCount = processedCount;
-    }
-
     @Override
     public String toString() {
         return "ResWarnRespDto{" +
                 "untreatedCount=" + untreatedCount +
-                ", processedCount=" + processedCount +
+                ", reqDto=" + reqDto +
                 '}';
     }
 }

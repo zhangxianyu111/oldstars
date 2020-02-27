@@ -35,6 +35,7 @@ public class ResWarnController {
                 ,"resWarn",ResWarnController.class.getName(),"getAllWarn");
         ResWarnRespDto baseRespDto = new ResWarnRespDto();
         try {
+            baseRespDto.setReqDto(reqDto);
             baseRespDto = resWarnService.selectAllByPage(reqDto.getMap(),baseRespDto);
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LogBuilderUtil.recordInfoLogs(
@@ -45,25 +46,6 @@ public class ResWarnController {
             baseRespDto.setCode(StatusConstant.FAIL);
         }
         return JSONObject.toJSONString(baseRespDto);
-    }
-    @ResponseBody
-    @RequestMapping(value = "getModule",method = RequestMethod.POST)
-    public BaseRespDto getModule(@RequestBody ResWarnReqDto reqDto){
-        LogBuilderUtil.recordInfoLogs(
-                LogBuilderUtil.getBuilder("getModule","查询模块信息","开始").appendParam("参数",reqDto).build()
-                ,"resWarn",ResWarnController.class.getName(),"getModule");
-        ResWarnRespDto baseRespDto = new ResWarnRespDto();
-        try {
-            baseRespDto = resWarnService.selectModule(reqDto.getMap(),baseRespDto);
-            baseRespDto.setCode(StatusConstant.SUCCESS);
-            LogBuilderUtil.recordInfoLogs(
-                    LogBuilderUtil.getBuilder("getModule","查询模块信息","结束").appendParam("响应结果",baseRespDto).build()
-                    ,"resWarn",ResWarnController.class.getName(),"getModule");
-        }catch(Exception e){
-            LogBuilderUtil.recordErrorLogs(e,"resWarn",ResWarnController.class.getName(),"getModule");
-            baseRespDto.setCode(StatusConstant.FAIL);
-        }
-        return baseRespDto;
     }
     /**
      * 处理 & 批量处理

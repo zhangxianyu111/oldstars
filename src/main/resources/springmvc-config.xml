@@ -16,6 +16,7 @@
     
     <!-- 设置默认配置方案 ，需要jackson包支持，spring默认的依赖-->
     <!-- <mvc:annotation-driven/> -->
+
     
     <!-- 使用阿里的fastjson包的设置配置方案 -->
     <mvc:annotation-driven>
@@ -42,24 +43,24 @@
     </mvc:annotation-driven>
     
     <!-- 载入静态资源文件-->
-    <mvc:resources mapping="/data/**" location="/WEB-INF/data/"/>
-    <mvc:resources mapping="/files/**" location="/WEB-INF/files/"/>
-    <mvc:resources mapping="/images/**" location="/WEB-INF/images/"/>
-    <mvc:resources mapping="/plugins/**" location="/WEB-INF/plugins/"/>
-    <mvc:resources mapping="/resources/**" location="/WEB-INF/resources/"/>
+    <!--<mvc:resources mapping="/css/**" location="/WEB-INF/front/css/"/>
+    <mvc:resources mapping="/img/**" location="/WEB-INF/front/img/"/>
+    <mvc:resources mapping="/build/**" location="/WEB-INF/build/"/>
+    <mvc:resources mapping="/qixi/**" location="/WEB-INF/qixi/"/>
+    <mvc:resources mapping="/src_btf/**" location="/WEB-INF/src_btf/"/>-->
     <!-- 使用默认的Servlet来响应静态文件,如js,css,img等 -->
     <mvc:default-servlet-handler/>
     <!-- 视图解析器  -->
      <bean id="viewResolver"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver"> 
         <!-- 前缀，jsp等页面的目录 -->
-        <property name="prefix">
-            <value>/</value>
-        </property>
-        <!-- 后缀 -->
-        <property name="suffix">
-            <value>.jsp</value>
-        </property>
+         <property name="prefix">
+             <value>/</value>
+         </property>
+         <!-- 后缀 -->
+         <property name="suffix">
+             <value>.jsp</value>
+         </property>
     </bean>
     
 </beans>

@@ -25,6 +25,10 @@ public class ResWarnServiceImpl implements ResWarnService {
         List<ResWarn> logs = resWarnDao.selectAll(paramMap);
         PageInfo pageInfo = new PageInfo(logs);
         long total = pageInfo.getTotal();
+        //查询 未处理 数量
+        paramMap.put("warnStatus",0);//未处理
+        Long untreatedCount = resWarnDao.selectAllCount(paramMap);
+        respDto.setUntreatedCount(untreatedCount == null?0L:untreatedCount);
         respDto.setCount(total);
         respDto.setData(logs);
         return respDto;
@@ -83,17 +87,5 @@ public class ResWarnServiceImpl implements ResWarnService {
         baseRespDto.setCode(StatusConstant.SUCCESS);
         baseRespDto.setSingleData(resWarn);
         return baseRespDto;
-    }
-
-    @Override
-    public ResWarnRespDto selectModule(Map<String,Object> paramMap,ResWarnRespDto respDto) {
-        //查询处理 和 未处理 数量
-        paramMap.put("warnStatus",0);//未处理
-        Long untreatedCount = resWarnDao.selectAllCount(paramMap);
-        paramMap.put("warnStatus",1);//已处理
-        Long processedCount = resWarnDao.selectAllCount(paramMap);
-        respDto.setUntreatedCount(untreatedCount == null?0L:untreatedCount);
-        respDto.setProcessedCount(processedCount == null?0L:processedCount);
-        return respDto;
     }
 }

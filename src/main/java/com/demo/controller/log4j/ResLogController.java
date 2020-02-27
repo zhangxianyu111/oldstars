@@ -31,6 +31,7 @@ public class ResLogController {
         ResLogRespDto baseRespDto = new ResLogRespDto();
 
         try {
+            baseRespDto.setReqDto(reqDto);
             baseRespDto = resLogService.selectAllByPage(reqDto.getMap(),baseRespDto);
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LogBuilderUtil.recordInfoLogs(

@@ -37,6 +37,13 @@ public class ResLogServiceImpl implements ResLogService {
         List<ResLog> logs = resLogDao.selectAll(paramMap);
         PageInfo pageInfo = new PageInfo(logs);
         long total = pageInfo.getTotal();
+        //查询error 和 warn 数量
+        paramMap.put("logLevel","ERROR");
+        Long errCount = resLogDao.selectAllCount(paramMap);
+        paramMap.put("logLevel","WARN");
+        Long warnCount = resLogDao.selectAllCount(paramMap);
+        respDto.setErrCount(errCount == null?0L:errCount);
+        respDto.setWarnCount(warnCount == null?0L:warnCount);
         respDto.setCount(total);
         respDto.setData(logs);
         return respDto;
@@ -78,15 +85,7 @@ public class ResLogServiceImpl implements ResLogService {
 
     @Override
     public ResLogRespDto selectModule(Map<String,Object> paramMap,ResLogRespDto respDto) {
-        //查询error 和 warn 数量
-        paramMap.put("logLevel","ERROR");
-        Long errCount = resLogDao.selectAllCount(paramMap);
-        paramMap.put("logLevel","WARN");
-        Long warnCount = resLogDao.selectAllCount(paramMap);
-        respDto.setErrCount(errCount == null?0L:errCount);
-        respDto.setWarnCount(warnCount == null?0L:warnCount);
         //查询未处理告警信息
-        paramMap.clear();
         paramMap.put("warnStatus",0);
         List<ResWarn> resLogs = resWarnDao.selectAll(paramMap);
         respDto.setWarnList(resLogs);

@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class IndexController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
-    @RequestMapping(value={"/",""},method= RequestMethod.GET)
+    /*@RequestMapping(value={"/",""},method= RequestMethod.GET)
     public String index(){
         LOGGER.info(LogBuilderUtil.getBuilder("index","跳转登录页面","")
                 .build());
         return "index";
 
-    }
+    }*/
     @ResponseBody
     @RequestMapping("/testError")
     public String errorTest(){

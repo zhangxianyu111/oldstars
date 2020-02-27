@@ -8,7 +8,7 @@ import com.demo.pojo.log4j.ResWarn;
 import java.util.List;
 import java.util.Map;
 
-public class ResLogRespDto extends BaseRespDto {
+public class ResLogRespDto<T> extends BaseRespDto {
     //错误日志数量
     private Long errCount;
     //警告日志数量
@@ -16,7 +16,7 @@ public class ResLogRespDto extends BaseRespDto {
     //警告日志
     private List<ResWarn> warnList;
     //查询条件
-    private ResLogReqDto resLogReqDto;
+    private T reqDto;
     //配置的模块
     private List<Statistics.Item> logModules;
 
@@ -44,12 +44,12 @@ public class ResLogRespDto extends BaseRespDto {
         this.warnList = warnList;
     }
 
-    public ResLogReqDto getResLogReqDto() {
-        return resLogReqDto;
+    public T getReqDto() {
+        return reqDto;
     }
 
-    public void setResLogReqDto(ResLogReqDto resLogReqDto) {
-        this.resLogReqDto = resLogReqDto;
+    public void setReqDto(T reqDto) {
+        this.reqDto = reqDto;
     }
 
     public List<Statistics.Item> getLogModules() {
@@ -66,7 +66,7 @@ public class ResLogRespDto extends BaseRespDto {
                 "errCount=" + errCount +
                 ", warnCount=" + warnCount +
                 ", warnList=" + warnList +
-                ", resLogReqDto=" + resLogReqDto +
+                ", reqDto=" + reqDto +
                 ", logModules=" + logModules +
                 '}';
     }
