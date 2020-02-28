@@ -13,20 +13,56 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class IndexController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
-    /*@RequestMapping(value={"/",""},method= RequestMethod.GET)
-    public String index(){
-        LOGGER.info(LogBuilderUtil.getBuilder("index","跳转登录页面","")
-                .build());
-        return "index";
 
-    }*/
-    @RequestMapping(value={"/quartz"},method= RequestMethod.GET)
-    public String quartz(){
-        LOGGER.info(LogBuilderUtil.getBuilder("index","跳转登录页面","")
+    /**
+     * 跳转我的日志首页
+     * @return
+     */
+    @RequestMapping(value={"/logindex"},method= RequestMethod.GET)
+    public String index(){
+        LOGGER.info(LogBuilderUtil.getBuilder("index","跳转我的日志页面","")
                 .build());
-        return "quartz";
+        return "/log/logindex";
 
     }
+
+    /**
+     * 跳转定时任务页面
+     * @return
+     */
+    @RequestMapping(value={"/quartz"},method= RequestMethod.GET)
+    public String quartz(){
+        LOGGER.info(LogBuilderUtil.getBuilder("index","跳转定时任务页面","")
+                .build());
+        return "/quartz/quartz";
+
+    }
+
+    /**
+     * 跳转我的日志页面
+     * @return
+     */
+    @RequestMapping(value={"/log"},method= RequestMethod.GET)
+    public String log(){
+        LOGGER.info(LogBuilderUtil.getBuilder("index","跳转定时任务页面","")
+                .build());
+        return "/log/log";
+
+    }
+
+    /**
+     * 跳转日志级别页面
+     * @return
+     */
+    @RequestMapping(value={"/loglevel"},method= RequestMethod.GET)
+    public String loglevel(){
+        LOGGER.info(LogBuilderUtil.getBuilder("index","跳转定时任务页面","")
+                .build());
+        return "/logtree/logTree";
+
+    }
+
+
     @ResponseBody
     @RequestMapping("/testError")
     public String errorTest(){

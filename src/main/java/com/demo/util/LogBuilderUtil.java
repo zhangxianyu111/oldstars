@@ -71,6 +71,7 @@ public class LogBuilderUtil {
         MDC.put("exception", "");
         MDC.put("class", className);
         MDC.put("method", methodName);
+        MDC.put("modelname", modelName);
         return logger;
     }
     /**
@@ -85,6 +86,7 @@ public class LogBuilderUtil {
         MDC.put("exception", e.getClass().getName());
         MDC.put("class", className);
         MDC.put("method", methodName);
+        MDC.put("modelname", modelName);
         String eStr = ExceptionUtil.getTrace(e);
         logger.error(eStr,e);
     }

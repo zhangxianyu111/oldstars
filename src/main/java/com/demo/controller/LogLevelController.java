@@ -36,7 +36,7 @@ public class LogLevelController {
      */
     @RequestMapping(value = "/level/toList")
     public String goToLogLevelPage() {
-        return "logTree";
+        return "/logtree/logTree";
     }
 
     @RequestMapping(value = "/list")

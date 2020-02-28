@@ -55,7 +55,7 @@
           class="org.springframework.web.servlet.view.InternalResourceViewResolver"> 
         <!-- 前缀，jsp等页面的目录 -->
          <property name="prefix">
-             <value>/</value>
+             <value>/WEB-INF/</value>
          </property>
          <!-- 后缀 -->
          <property name="suffix">

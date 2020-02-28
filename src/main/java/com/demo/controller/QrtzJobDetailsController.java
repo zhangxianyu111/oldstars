@@ -36,7 +36,7 @@ public class QrtzJobDetailsController {
 	public String logsPage(){
 		logger.info(LogBuilderUtil.getBuilder("logs","跳转定时任务页面","")
 				.build());
-		return "quartz";
+		return "/quartz/quartz";
 
 	}
 	@RequestMapping(value="/addQrtz",method= RequestMethod.GET)

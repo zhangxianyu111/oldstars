@@ -40,7 +40,7 @@ public class LoggerController {
     public String logsPage(){
         LOGGER.info(LogBuilderUtil.getBuilder("logs","跳转日志类型页面","")
                 .build());
-        return "log";
+        return "/log/log";
 
     }
 
