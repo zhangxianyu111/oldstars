@@ -51,7 +51,7 @@ public class ResLogController {
                 ,"resLog",ResLogController.class.getName(),"selectModule");
         ResLogRespDto baseRespDto = new ResLogRespDto();
         try {
-            baseRespDto = resLogService.selectModule(reqDto.getMap(),baseRespDto);
+            baseRespDto = resLogService.selectModule(baseRespDto);
             baseRespDto.setCode(StatusConstant.SUCCESS);
             LogBuilderUtil.recordInfoLogs(
                     LogBuilderUtil.getBuilder("selectModule","查询模块信息","结束").appendParam("响应结果",baseRespDto).build()

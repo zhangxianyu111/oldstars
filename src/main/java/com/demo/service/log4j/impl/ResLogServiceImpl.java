@@ -84,10 +84,9 @@ public class ResLogServiceImpl implements ResLogService {
     }
 
     @Override
-    public ResLogRespDto selectModule(Map<String,Object> paramMap,ResLogRespDto respDto) {
+    public ResLogRespDto selectModule(ResLogRespDto respDto) {
         //查询未处理告警信息
-        paramMap.put("warnStatus",0);
-        List<ResWarn> resLogs = resWarnDao.selectAll(paramMap);
+        List<ResWarn> resLogs = resWarnDao.selectLastWarn();
         respDto.setWarnList(resLogs);
         //查询模块
         respDto.setLogModules(InitConfig.getStatistics().getMoudle().getItems());

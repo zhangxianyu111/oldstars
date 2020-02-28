@@ -17,4 +17,6 @@ public interface ResWarnMapper {
     ResWarn seeWarn(Map map);
 
     void insert(ResWarn resWarn);
+
+    List<ResWarn> selectLastWarn();
 }

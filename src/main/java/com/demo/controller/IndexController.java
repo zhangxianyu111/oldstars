@@ -20,6 +20,13 @@ public class IndexController {
         return "index";
 
     }*/
+    @RequestMapping(value={"/quartz"},method= RequestMethod.GET)
+    public String quartz(){
+        LOGGER.info(LogBuilderUtil.getBuilder("index","跳转登录页面","")
+                .build());
+        return "quartz";
+
+    }
     @ResponseBody
     @RequestMapping("/testError")
     public String errorTest(){

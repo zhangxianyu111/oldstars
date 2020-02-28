@@ -59,10 +59,10 @@
                 and warn_status = #{warnStatus}
             </if>
             <if test="sTime != null">
-                and warn_time <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
+                and to_timestamp(to_char(warn_time,'yyyy-MM-dd HH24:mi:ss'),'yyyy-MM-dd HH24:mi:ss') <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
             <if test="eTime != null">
-                and warn_time <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
+                and to_timestamp(to_char(warn_time,'yyyy-MM-dd HH24:mi:ss'),'yyyy-MM-dd HH24:mi:ss') <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
         </where>
         order by warn_time desc
@@ -104,10 +104,10 @@
                 and warn_status = #{warnStatus}
             </if>
             <if test="sTime != null">
-                and warn_time <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
+                and to_timestamp(to_char(warn_time,'yyyy-MM-dd HH24:mi:ss'),'yyyy-MM-dd HH24:mi:ss') <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
             <if test="eTime != null">
-                and warn_time <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
+                and to_timestamp(to_char(warn_time,'yyyy-MM-dd HH24:mi:ss'),'yyyy-MM-dd HH24:mi:ss') <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
         </where>
     </select>
@@ -167,6 +167,18 @@
         insert into public.reswarn  (warn_module,warn_msg,warn_status,warn_time,handle_user,handle_time,start_time)
         VALUES (#{warnModule},#{warnMsg},#{warnStatus},now(),#{handleUser},#{handleTime},#{startTime})
     </insert>
+
+    <select id="selectLastWarn" resultMap="warnResultMap" databaseId="mysql">
+        select
+        <include refid="baseSql"/>
+        from reswarn where WARNSTATUS = 0 order by WARNTIME desc limit 1
+    </select>
+
+    <select id="selectLastWarn" resultMap="warnResultMap" databaseId="postgresql">
+        select
+        <include refid="basePostgreSql"/>
+        from public.reswarn where warn_status = 0 order by warn_time desc limit 1
+    </select>
 
 </mapper>
 

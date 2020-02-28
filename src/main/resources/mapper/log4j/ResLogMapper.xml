@@ -51,10 +51,10 @@
                 and log_level = #{logLevel}
             </if>
             <if test="sTime != null">
-                and create_time <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
+                and to_timestamp(to_char(create_time,'yyyy-MM-dd HH24:mi:ss'),'yyyy-MM-dd HH24:mi:ss') <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
             <if test="eTime != null">
-                and create_time <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
+                and to_timestamp(to_char(create_time,'yyyy-MM-dd HH24:mi:ss'),'yyyy-MM-dd HH24:mi:ss') <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
         </where>
         order by create_time desc
@@ -90,10 +90,10 @@
                 and log_level = #{logLevel}
             </if>
             <if test="sTime != null">
-                and create_time <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
+                and to_timestamp(to_char(create_time,'yyyy-MM-dd HH24:mi:ss'),'yyyy-MM-dd HH24:mi:ss') <![CDATA[ >= ]]> to_timestamp(#{sTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
             <if test="eTime != null">
-                and create_time <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
+                and to_timestamp(to_char(create_time,'yyyy-MM-dd HH24:mi:ss'),'yyyy-MM-dd HH24:mi:ss') <![CDATA[ <= ]]> to_timestamp(#{eTime},'yyyy-MM-dd HH24:mi:ss')
             </if>
         </where>
     </select>

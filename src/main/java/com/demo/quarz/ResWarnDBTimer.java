@@ -15,6 +15,7 @@ import org.apache.log4j.MDC;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -45,7 +46,7 @@ public class ResWarnDBTimer {
      * 每天定时任务
      */
     //@Scheduled(cron = "* * 3 * * ?")
-    //@Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void checkResWarn() throws Exception{
         logger.info("开始调用第三方接口查询告警信息");
         Statistics statistics = InitConfig.getStatistics();
@@ -61,7 +62,7 @@ public class ResWarnDBTimer {
         logger.info("调用第三方接口查询告警信息结束");
 
     }
-
+    @Scheduled(cron = "0/10 * * * * ?")
     public void ScheduledDelete() throws Exception{
         logger.info("开始调用第三方接口删除数据库过期日志信息任务");
         resLogDao.deleteExpire();
