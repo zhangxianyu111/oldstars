@@ -165,7 +165,7 @@
 
     <insert id="insert" parameterType="com.demo.pojo.log4j.ResWarn" databaseId="postgresql">
         insert into public.reswarn  (warn_module,warn_msg,warn_status,warn_time,handle_user,handle_time,start_time)
-        VALUES (#{warnModule},#{warnMsg},#{warnStatus},now(),#{handleUser},#{handleTime},#{startTime})
+        VALUES (#{warnModule},#{warnMsg},#{warnStatus},#{warnTime},#{handleUser},#{handleTime},#{startTime})
     </insert>
 
     <select id="selectLastWarn" resultMap="warnResultMap" databaseId="mysql">

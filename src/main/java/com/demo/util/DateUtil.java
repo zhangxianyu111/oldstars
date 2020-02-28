@@ -129,11 +129,10 @@ public class DateUtil{
 
 
     /* ************工具方法***************   */
-    public static String getSubOrAddTime(int second){
+    public static String getSubOrAddTime(Date curr_time,int second){
         SimpleDateFormat sdf=new SimpleDateFormat(DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS);
-        Date date=new Date();
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
+        calendar.setTime(curr_time);
         calendar.add(Calendar.SECOND, second);
         Date time = calendar.getTime();
         return sdf.format(time);
@@ -172,8 +171,7 @@ public class DateUtil{
      *
      * @return
      */
-    public static String getNowStr() {
-        Date d = new Date();
+    public static String getNowStr(Date d) {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS);
         return sdf.format(d);
     }

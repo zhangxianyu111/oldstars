@@ -73,13 +73,15 @@ public class ResWarnDBTimer {
 
     public void ConfigScheduleWarnLog(String msg, Long warnCount,Long errorCount, String moduleName){
         Map<String, Object> paramMap = new HashMap<>();
-        String sTime = DateUtil.getSubOrAddTime(-DATELIMIT);
-        String eTime = DateUtil.getNowStr();
+        Date now = new Date();
+        String sTime = DateUtil.getSubOrAddTime(now,-DATELIMIT);
+        String eTime = DateUtil.getNowStr(now);
         paramMap.put("sTime", sTime);
         paramMap.put("eTime", eTime);
         paramMap.put("logLevel", "WARN");
         paramMap.put("moduleName", moduleName);
         Long warnDBCount = resLogDao.selectAllCount(paramMap);
+
         paramMap.put("logLevel", "ERROR");
         Long errorDBCount = resLogDao.selectAllCount(paramMap);
         if (warnDBCount != null && errorDBCount != null && (warnDBCount.longValue() >= warnCount.longValue()
@@ -96,6 +98,7 @@ public class ResWarnDBTimer {
             resWarn.setWarnStatus(0);
             resWarn.setStartTime(DateUtil.parseDate(sTime));
             resWarn.setWarnMsg(warnMsgStr);
+            resWarn.setWarnTime(DateUtil.parseDate(eTime));
             resWarnDao.insert(resWarn);
             logger.info(LogBuilderUtil.getBuilder("ConfigScheduleWarnLog","定时查询告警信息","新增告警信息成功").build());
         }
@@ -217,8 +220,9 @@ public class ResWarnDBTimer {
         String[] strs = group.split("-");
 
         Map<String, Object> paramMap = new HashMap<>();
-        String sTime = DateUtil.getSubOrAddTime(-Integer.valueOf(strs[2]));
-        String eTime = DateUtil.getNowStr();
+        Date date = new Date();
+        String sTime = DateUtil.getSubOrAddTime(date,-Integer.valueOf(strs[2]));
+        String eTime = DateUtil.getNowStr(date);
         paramMap.put("sTime", sTime);
         paramMap.put("eTime", eTime);
         paramMap.put("logLevel", strs[1]);
