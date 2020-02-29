@@ -1,5 +1,6 @@
 package com.demo.service;
 
+import com.demo.common.Statistics;
 import com.demo.dto.response.BaseRespDto;
 import com.demo.pojo.QrtzJobDetails;
 import com.github.pagehelper.Page;
@@ -27,6 +28,8 @@ public interface QrtzJobDetailsService {
 	
 	Map<String, Object> pauseJob(QrtzJobDetails qrtzJobDetails) throws Exception;
 	Map<String, Object> resumeJob(QrtzJobDetails qrtzJobDetails) throws Exception;
+
+	void createDynamicQrtzJobsByWebStart(Statistics.Item item) throws Exception;
 	
 	
 }

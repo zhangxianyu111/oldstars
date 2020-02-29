@@ -24,6 +24,12 @@ public class QrtzJobDetails implements Serializable{
 	
 	//非持久化属性
 	private String cronExpression;
+    //重复执行次数
+	private Integer  repeatCount;
+	//定时执行间隔（秒）
+	private Integer repeatInterval;
+	//已执行了多少次
+	private Integer timesTriggered;
 	
 	public QrtzJobDetails(){
 		super();
@@ -117,20 +123,47 @@ public class QrtzJobDetails implements Serializable{
 		this.cronExpression = cronExpression;
 	}
 
-	@Override
-	public String toString() {
-		return "QrtzJobDetails ["
-				+ "schedName = " + schedName 
-				+ ", jobName = " + jobName 
-				+ ", jobGroup = " + jobGroup 
-				+ ", description = " + description 
-				+ ", jobClassName = " + jobClassName 
-				+ ", isDurable = " + isDurable 
-				+ ", isNonconcurrent = " + isNonconcurrent 
-				+ ", isUpdateData = " + isUpdateData 
-				+ ", requestsRecovery = " + requestsRecovery 
-				+ ", jobData = " + jobData 
-				+ "]";
-	}
-	
+    public Integer getRepeatCount() {
+        return repeatCount;
+    }
+
+    public void setRepeatCount(Integer repeatCount) {
+        this.repeatCount = repeatCount;
+    }
+
+    public Integer getRepeatInterval() {
+        return repeatInterval;
+    }
+
+    public void setRepeatInterval(Integer repeatInterval) {
+        this.repeatInterval = repeatInterval;
+    }
+
+    public Integer getTimesTriggered() {
+        return timesTriggered;
+    }
+
+    public void setTimesTriggered(Integer timesTriggered) {
+        this.timesTriggered = timesTriggered;
+    }
+
+    @Override
+    public String toString() {
+        return "QrtzJobDetails{" +
+                "schedName='" + schedName + '\'' +
+                ", jobName='" + jobName + '\'' +
+                ", jobGroup='" + jobGroup + '\'' +
+                ", description='" + description + '\'' +
+                ", jobClassName='" + jobClassName + '\'' +
+                ", isDurable='" + isDurable + '\'' +
+                ", isNonconcurrent='" + isNonconcurrent + '\'' +
+                ", isUpdateData='" + isUpdateData + '\'' +
+                ", requestsRecovery='" + requestsRecovery + '\'' +
+                ", jobData='" + jobData + '\'' +
+                ", cronExpression='" + cronExpression + '\'' +
+                ", repeatCount=" + repeatCount +
+                ", repeatInterval=" + repeatInterval +
+                ", timesTriggered=" + timesTriggered +
+                '}';
+    }
 }

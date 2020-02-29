@@ -93,6 +93,11 @@ public class ResLogServiceImpl implements ResLogService {
         return respDto;
     }
 
+    @Override
+    public Long selectAllCount(Map<String, Object> paramMap) {
+        return resLogDao.selectAllCount(paramMap);
+    }
+
     public void charsetDownload(String content, HttpServletResponse response) throws IOException {
         String fileName = randomUUID()+".txt";
         OutputStream os = null;

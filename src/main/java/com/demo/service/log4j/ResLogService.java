@@ -15,4 +15,6 @@ public interface ResLogService {
     void downLoad(Long id,HttpServletResponse response) throws Exception;
 
     ResLogRespDto selectModule(ResLogRespDto baseRespDto);
+
+    Long selectAllCount(Map<String, Object> paramMap);
 }

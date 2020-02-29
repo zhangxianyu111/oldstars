@@ -1,11 +1,14 @@
 package com.demo.service.serviceimpl;
 
+import com.demo.common.Statistics;
+import com.demo.common.constant.ErrorOrWarnConstant;
 import com.demo.common.constant.StatusConstant;
 import com.demo.dao.QrtzJobDetailsMapper;
 import com.demo.dto.response.BaseRespDto;
 import com.demo.exception.DynamicQuartzException;
 import com.demo.pojo.QrtzJobDetails;
 import com.demo.quarz.DynamicQuartzJob;
+import com.demo.quarz.Log4jDynamicQuartzJob;
 import com.demo.service.QrtzJobDetailsService;
 import com.demo.util.QuartzUtil;
 import com.demo.util.SpringContextHolder;
@@ -35,12 +38,17 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 	private static final String TRIGGER_NAME_PREFIX = "triggerName.";
 	/** jobName/triggerName 默认组 */
 	private static final String GROUP_DEFAULT = "DEFAULT";
+
+	/** 项目启动查询配置信息 定义jobName后缀 **/
+	private static final String JOB_NAME_WARN_SUFFIX= ".warn";
+	private static final String JOB_NAME_ERROR_SUFFIX= ".error";
 	
 	@Resource
 	private QrtzJobDetailsMapper qrtzJobDetailsMapper;
 	@Resource
-	private Scheduler scheduler; 
-	
+	private Scheduler scheduler;
+	private Statistics.Item item;
+
 	@Override
 	public BaseRespDto createQrtzJobDetails(QrtzJobDetails qrtzJobDetails,BaseRespDto baseRespDto) throws Exception{
 		
@@ -50,6 +58,10 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 		}
 		if (StringUtils.isBlank(qrtzJobDetails.getJobName())) {
 			throw new Exception("qrtzJobDetails serviceInfo 为空");
+		}
+		if (StringUtils.isBlank(qrtzJobDetails.getCronExpression()) && (qrtzJobDetails.getRepeatCount()==null &&
+				qrtzJobDetails.getRepeatInterval()==null)){
+			throw new Exception("qrtzJobDetails 定时参数 为空");
 		}
 
 		// 定时服务有效性校验 (校验是否存在对应的servcie.method )
@@ -67,10 +79,25 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 		// 构建job信息
 		JobDetail job = JobBuilder.newJob(DynamicQuartzJob.class).withIdentity(jobKey).withDescription(qrtzJobDetails.getDescription()).build();
 		TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, jobGroup);
+		Trigger trigger;
+		if (StringUtils.isNotBlank(qrtzJobDetails.getCronExpression())){
+			// 构建job的触发规则 cronExpression
+			trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
+					.withSchedule(CronScheduleBuilder.cronSchedule(qrtzJobDetails.getCronExpression())).build();
+		}else {
+			if (qrtzJobDetails.getRepeatCount() != -1){
+				trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
+						.withSchedule(SimpleScheduleBuilder.simpleSchedule()
+								.withIntervalInSeconds(qrtzJobDetails.getRepeatInterval())
+								.withRepeatCount(qrtzJobDetails.getRepeatCount())).build();
+			}else{
+				trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
+						.withSchedule(SimpleScheduleBuilder.simpleSchedule()
+								.withIntervalInSeconds(qrtzJobDetails.getRepeatInterval())
+								.repeatForever()).build();
+			}
 
-        // 构建job的触发规则 cronExpression
-		Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()  
-        		.withSchedule(CronScheduleBuilder.cronSchedule(qrtzJobDetails.getCronExpression())).build();
+		}
 
 		// 注册job和trigger信息
         scheduler.scheduleJob(job, trigger);
@@ -101,8 +128,25 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 			scheduler.pauseTrigger(trigger.getKey());
 			triggerKey = trigger.getKey();
 		}
-		Trigger newTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
-              .withSchedule(CronScheduleBuilder.cronSchedule(qrtzJobDetails.getCronExpression())).build();
+		Trigger newTrigger ;
+		if (StringUtils.isNotBlank(qrtzJobDetails.getCronExpression())){
+			newTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
+					.withSchedule(CronScheduleBuilder.cronSchedule(qrtzJobDetails.getCronExpression())).build();
+		}else {
+			if (qrtzJobDetails.getRepeatCount() != -1){
+				newTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
+						.withSchedule(SimpleScheduleBuilder.simpleSchedule()
+								.withIntervalInSeconds(qrtzJobDetails.getRepeatInterval())
+								.withRepeatCount(qrtzJobDetails.getRepeatCount())).build();
+			}else{
+				newTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
+						.withSchedule(SimpleScheduleBuilder.simpleSchedule()
+								.withIntervalInSeconds(qrtzJobDetails.getRepeatInterval())
+								.repeatForever()).build();
+			}
+
+		}
+
 		scheduler.rescheduleJob(newTrigger.getKey(), newTrigger);
 		resultMap.put("success",true);
 		resultMap.put("msg","更新成功！");
@@ -193,9 +237,64 @@ public class QrtzJobDetailsServiceImpl implements QrtzJobDetailsService {
 		
 
 	}
-	
 
+	/**
+	 * 项目启动创建定时任务
+	 * @zje
+	 */
+	@Override
+	public void createDynamicQrtzJobsByWebStart(Statistics.Item item) throws Exception{
+		this.item = item;
+		// 非空校验
+		if (item == null) {
+			throw new Exception("item 为空");
+		}
+		if (StringUtils.isBlank(item.getName())) {
+			throw new Exception("item jobname 为空");
+		}
 
+		// 唯一性校验
+		String warnJobName = JOB_NAME_PREFIX + item.getName()+JOB_NAME_WARN_SUFFIX;
+		String errJobName = JOB_NAME_PREFIX + item.getName()+JOB_NAME_ERROR_SUFFIX;
+		String warnTriggerName = TRIGGER_NAME_PREFIX + item.getName()+JOB_NAME_WARN_SUFFIX;
+		String errTriggerName = TRIGGER_NAME_PREFIX + item.getName()+JOB_NAME_ERROR_SUFFIX;
+		String jobGroup = StringUtils.isBlank(item.getName())? GROUP_DEFAULT : item.getName();
+
+		//创建两个定时任务
+		createDynamicQuartzJob(item, warnJobName, warnTriggerName, jobGroup,ErrorOrWarnConstant.WARN);
+		createDynamicQuartzJob(item, errJobName, errTriggerName, jobGroup,ErrorOrWarnConstant.ERROR);
+	}
+
+	private void createDynamicQuartzJob(Statistics.Item item, String jobName, String triggerName, String jobGroup,int isErrorOrWarn) throws SchedulerException, DynamicQuartzException {
+		JobKey jobKey = JobKey.jobKey(jobName, jobGroup);
+		if (scheduler.checkExists(jobKey)) {
+			//删除后重新创建
+			QuartzUtil.deleteJob(scheduler, jobKey);
+		}
+
+		// 构建job信息
+		JobDetail jobDetail = JobBuilder.newJob(Log4jDynamicQuartzJob.class)
+				.withIdentity(jobKey)
+				.usingJobData("module",item.getName())
+				.usingJobData("errCount", item.getErrorCount())
+				.usingJobData("warnCount", item.getWarnCount())
+				.usingJobData("errTime", item.getErrorTime())
+				.usingJobData("warnTime", item.getWarnTime())
+				.usingJobData("isWarnOrError", isErrorOrWarn)
+				.withDescription(item.getDesc())
+				.build();
+
+		TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, jobGroup);
+
+		// 构建job的触发规则 cronExpression
+		Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow()
+				.withSchedule(SimpleScheduleBuilder.simpleSchedule()
+						.withIntervalInSeconds(item.getWarnTime())
+						.repeatForever()).build();
+
+		// 注册job和trigger信息
+		scheduler.scheduleJob(jobDetail, trigger);
+	}
 
 
 }

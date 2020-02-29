@@ -43,7 +43,7 @@ public class QrtzJobDetailsController {
 	public String addQrtz(){
 		logger.info(LogBuilderUtil.getBuilder("logs","跳转添加定时任务页面","")
 				.build());
-		return "addquartz";
+		return "/quartz/addquartz";
 
 	}
 	@RequestMapping("/listByPage")
@@ -172,5 +172,6 @@ public class QrtzJobDetailsController {
 
 		return map;
 	}
-	
+
+
 }

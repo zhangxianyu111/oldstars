@@ -33,6 +33,11 @@
 		<result column="time_zone_id" property="timeZoneId" jdbcType="VARCHAR" />
 		<result column="trigger_state" property="triggerState" jdbcType="VARCHAR" />
 
+		<!-- 新增 -->
+		<result column="repeat_count" property="repeatCount" jdbcType="INTEGER" />
+		<result column="repeat_interval" property="repeatInterval" jdbcType="INTEGER" />
+		<result column="times_triggered" property="timesTriggered" jdbcType="INTEGER" />
+
 	</resultMap>	
 	
 	<sql id="Base_Column_List" >
@@ -231,7 +236,8 @@
 	</select>
 
 	<select id="selectMapListCount" resultType="java.lang.Long" databaseId="mysql">
-		select count(1) from qrtz_job_details t
+		select sum(tmpcount) from (
+		select count(1) as tmpcount from qrtz_job_details t
 		join qrtz_triggers a on t.SCHED_NAME = a.SCHED_NAME and t.JOB_NAME = a.JOB_NAME and t.JOB_GROUP = a.JOB_GROUP
 		join qrtz_cron_triggers b on a.SCHED_NAME = b.SCHED_NAME and a.TRIGGER_NAME = b.TRIGGER_NAME and a.TRIGGER_GROUP = b.TRIGGER_GROUP
 		<where>
@@ -266,9 +272,49 @@
 				and t.JOB_DATA =#{jobData}
 			</if>
 		</where>
+		union
+		select count(1) AS tmpcount
+		from public.qrtz_job_details t
+		join public.qrtz_triggers a on t.sched_name = a.sched_name and t.job_name = a.job_name and t.job_group = a.job_group
+		join public.qrtz_simple_triggers b on a.sched_name = b.sched_name and a.trigger_name = b.trigger_name and a.trigger_group = b.trigger_group
+		<where>
+			<if test="schedName != null and schedName !='' ">
+				and t.sched_name =#{schedName}
+			</if>
+			<if test="jobName != null and jobName !='' ">
+				and t.job_name =#{jobName}
+			</if>
+			<if test="jobGroup != null and jobGroup !='' ">
+				and t.job_group =#{jobGroup}
+			</if>
+			<if test="description != null and description !='' ">
+				and t.description like CONCAT('%','${description}','%')
+			</if>
+			<if test="jobClassName != null and jobClassName !='' ">
+				and t.job_class_name =#{jobClassName}
+			</if>
+			<if test="isDurable != null and isDurable !='' ">
+				and t.is_durable =#{isDurable}
+			</if>
+			<if test="isNonconcurrent != null and isNonconcurrent !='' ">
+				and t.is_nonconcurrent =#{isNonconcurrent}
+			</if>
+			<if test="isUpdateData != null and isUpdateData !='' ">
+				and t.is_update_data =#{isUpdateData}
+			</if>
+			<if test="requestsRecovery != null and requestsRecovery !='' ">
+				and t.requests_recovery =#{requestsRecovery}
+			</if>
+			<if test="jobData != null and jobData !='' ">
+				and t.job_data =#{jobData}
+			</if>
+		</where>
+		) A
+
 	</select>
 	<select id="selectMapListCount" resultType="java.lang.Long" databaseId="postgresql">
-		select count(1) from public.qrtz_job_details t
+		select sum(tmpcount) from (
+		select count(1) as tmpcount from public.qrtz_job_details t
 		join public.qrtz_triggers a on t.sched_name = a.sched_name and t.job_name = a.job_name and t.job_group = a.job_group
 		join public.qrtz_cron_triggers b on a.sched_name = b.sched_name and a.trigger_name = b.trigger_name and a.trigger_group = b.trigger_group
 		<where>
@@ -303,16 +349,58 @@
 				and t.job_data =#{jobData}
 			</if>
 		</where>
+		union
+		select count(1) AS tmpcount
+		from public.qrtz_job_details t
+		join public.qrtz_triggers a on t.sched_name = a.sched_name and t.job_name = a.job_name and t.job_group = a.job_group
+		join public.qrtz_simple_triggers b on a.sched_name = b.sched_name and a.trigger_name = b.trigger_name and a.trigger_group = b.trigger_group
+		<where>
+			<if test="schedName != null and schedName !='' ">
+				and t.sched_name =#{schedName}
+			</if>
+			<if test="jobName != null and jobName !='' ">
+				and t.job_name =#{jobName}
+			</if>
+			<if test="jobGroup != null and jobGroup !='' ">
+				and t.job_group =#{jobGroup}
+			</if>
+			<if test="description != null and description !='' ">
+				and t.description like CONCAT('%','${description}','%')
+			</if>
+			<if test="jobClassName != null and jobClassName !='' ">
+				and t.job_class_name =#{jobClassName}
+			</if>
+			<if test="isDurable != null and isDurable !='' ">
+				and t.is_durable =#{isDurable}
+			</if>
+			<if test="isNonconcurrent != null and isNonconcurrent !='' ">
+				and t.is_nonconcurrent =#{isNonconcurrent}
+			</if>
+			<if test="isUpdateData != null and isUpdateData !='' ">
+				and t.is_update_data =#{isUpdateData}
+			</if>
+			<if test="requestsRecovery != null and requestsRecovery !='' ">
+				and t.requests_recovery =#{requestsRecovery}
+			</if>
+			<if test="jobData != null and jobData !='' ">
+				and t.job_data =#{jobData}
+			</if>
+		</where>
+		) A
+
 	</select>
   	
   	<select id="selectMapList" resultMap="DataResultMap" databaseId="mysql">
   		select 
 	    <include refid="Base_Column_List" />,
 		a.TRIGGER_STATE as trigger_state,
-	    b.TRIGGER_NAME as trigger_name,
-	    b.TRIGGER_GROUP as trigger_group,
+	    a.TRIGGER_NAME as trigger_name,
+	    a.TRIGGER_GROUP as trigger_group,
 	    b.CRON_EXPRESSION as cron_expression,
 	    b.TIME_ZONE_ID as time_zone_id
+		0 as repeat_count ,
+		0 as repeat_interval,
+		0 as times_triggered
 	    from qrtz_job_details t
 	    join qrtz_triggers a on t.SCHED_NAME = a.SCHED_NAME and t.JOB_NAME = a.JOB_NAME and t.JOB_GROUP = a.JOB_GROUP
 	    join qrtz_cron_triggers b on a.SCHED_NAME = b.SCHED_NAME and a.TRIGGER_NAME = b.TRIGGER_NAME and a.TRIGGER_GROUP = b.TRIGGER_GROUP
@@ -348,6 +436,53 @@
 	    	 	and t.JOB_DATA =#{jobData}
 	    	</if>
 	    </where>
+		union
+		select
+		<include refid="Base_PG_Column_List" />,
+		a.TRIGGER_STATE as trigger_state,
+		a.TRIGGER_NAME as trigger_name,
+		a.TRIGGER_GROUP as trigger_group,
+		'' as cron_expression,
+		'' as time_zone_id,
+		b.REPEAT_COUNT as repeat_count ,
+		b.REPEAT_INTERVAL/1000 as repeat_interval,
+		b.TIMES_TRIGGERED as times_triggered
+		from public.qrtz_job_details t
+		join public.qrtz_triggers a on t.sched_name = a.sched_name and t.job_name = a.job_name and t.job_group = a.job_group
+		join public.qrtz_simple_triggers b on a.sched_name = b.sched_name and a.trigger_name = b.trigger_name and a.trigger_group = b.trigger_group
+		<where>
+
+			<if test="schedName != null and schedName !='' ">
+				and t.sched_name =#{schedName}
+			</if>
+			<if test="jobName != null and jobName !='' ">
+				and t.job_name =#{jobName}
+			</if>
+			<if test="jobGroup != null and jobGroup !='' ">
+				and t.job_group =#{jobGroup}
+			</if>
+			<if test="description != null and description !='' ">
+				and t.description like CONCAT('%','${description}','%')
+			</if>
+			<if test="jobClassName != null and jobClassName !='' ">
+				and t.job_class_name =#{jobClassName}
+			</if>
+			<if test="isDurable != null and isDurable !='' ">
+				and t.is_durable =#{isDurable}
+			</if>
+			<if test="isNonconcurrent != null and isNonconcurrent !='' ">
+				and t.is_nonconcurrent =#{isNonconcurrent}
+			</if>
+			<if test="isUpdateData != null and isUpdateData !='' ">
+				and t.is_update_data =#{isUpdateData}
+			</if>
+			<if test="requestsRecovery != null and requestsRecovery !='' ">
+				and t.requests_recovery =#{requestsRecovery}
+			</if>
+			<if test="jobData != null and jobData !='' ">
+				and t.job_data =#{jobData}
+			</if>
+		</where>
 		<!-- 	     
 		<if test="page.sortName != null and page.sortOrder!=null">
     	order by ${page.sortName} ${page.sortOrder} 
@@ -357,14 +492,64 @@
 		select
 		<include refid="Base_PG_Column_List" />,
 		a.trigger_state,
-		b.trigger_name,
-		b.trigger_group,
+		a.trigger_name,
+		a.trigger_group,
 		b.cron_expression,
-		b.time_zone_id
+		b.time_zone_id,
+		0 as repeat_count ,
+		0 as repeat_interval,
+		0 as times_triggered
 		from public.qrtz_job_details t
 		join public.qrtz_triggers a on t.sched_name = a.sched_name and t.job_name = a.job_name and t.job_group = a.job_group
 		join public.qrtz_cron_triggers b on a.sched_name = b.sched_name and a.trigger_name = b.trigger_name and a.trigger_group = b.trigger_group
 		<where>
+			<if test="schedName != null and schedName !='' ">
+				and t.sched_name =#{schedName}
+			</if>
+			<if test="jobName != null and jobName !='' ">
+				and t.job_name =#{jobName}
+			</if>
+			<if test="jobGroup != null and jobGroup !='' ">
+				and t.job_group =#{jobGroup}
+			</if>
+			<if test="description != null and description !='' ">
+				and t.description like CONCAT('%','${description}','%')
+			</if>
+			<if test="jobClassName != null and jobClassName !='' ">
+				and t.job_class_name =#{jobClassName}
+			</if>
+			<if test="isDurable != null and isDurable !='' ">
+				and t.is_durable =#{isDurable}
+			</if>
+			<if test="isNonconcurrent != null and isNonconcurrent !='' ">
+				and t.is_nonconcurrent =#{isNonconcurrent}
+			</if>
+			<if test="isUpdateData != null and isUpdateData !='' ">
+				and t.is_update_data =#{isUpdateData}
+			</if>
+			<if test="requestsRecovery != null and requestsRecovery !='' ">
+				and t.requests_recovery =#{requestsRecovery}
+			</if>
+			<if test="jobData != null and jobData !='' ">
+				and t.job_data =#{jobData}
+			</if>
+		</where>
+		union
+		select
+		<include refid="Base_PG_Column_List" />,
+		a.trigger_state,
+		a.trigger_name,
+		a.trigger_group,
+		'' as cron_expression,
+		'' as time_zone_id,
+		b.repeat_count ,
+		b.repeat_interval/1000 as repeat_interval,
+		b.times_triggered
+		from public.qrtz_job_details t
+		join public.qrtz_triggers a on t.sched_name = a.sched_name and t.job_name = a.job_name and t.job_group = a.job_group
+		join public.qrtz_simple_triggers b on a.sched_name = b.sched_name and a.trigger_name = b.trigger_name and a.trigger_group = b.trigger_group
+		<where>
+
 			<if test="schedName != null and schedName !='' ">
 				and t.sched_name =#{schedName}
 			</if>
