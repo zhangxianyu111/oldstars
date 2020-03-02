@@ -3,6 +3,8 @@ package com.demo.service.log4j.impl;
 import com.demo.common.constant.StatusConstant;
 import com.demo.dao.log4j.ResWarnMapper;
 import com.demo.dto.response.log4j.ResWarnRespDto;
+import com.demo.init.InitConfig;
+import com.demo.pojo.log4j.ResLog;
 import com.demo.pojo.log4j.ResWarn;
 import com.demo.service.log4j.ResWarnService;
 import com.github.pagehelper.PageHelper;
@@ -30,6 +32,13 @@ public class ResWarnServiceImpl implements ResWarnService {
         Long untreatedCount = resWarnDao.selectAllCount(paramMap);
         respDto.setUntreatedCount(untreatedCount == null?0L:untreatedCount);
         respDto.setCount(total);
+        //遍历转换模块名称
+        for (ResWarn warn : logs) {
+            Object moduleDesc = InitConfig.MODULEMAP.get(warn.getWarnModule());
+            if(moduleDesc!=null){
+                warn.setWarnModule(moduleDesc.toString());
+            }
+        }
         respDto.setData(logs);
         return respDto;
     }
