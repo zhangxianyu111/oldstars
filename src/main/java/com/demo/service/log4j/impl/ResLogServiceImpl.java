@@ -45,6 +45,13 @@ public class ResLogServiceImpl implements ResLogService {
         respDto.setErrCount(errCount == null?0L:errCount);
         respDto.setWarnCount(warnCount == null?0L:warnCount);
         respDto.setCount(total);
+        //遍历转换模块名称
+        for (ResLog log : logs) {
+            Object moduleDesc = InitConfig.MODULEMAP.get(log.getModuleName());
+            if(moduleDesc!=null){
+                log.setModuleName(moduleDesc.toString());
+            }
+        }
         respDto.setData(logs);
         return respDto;
     }

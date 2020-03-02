@@ -160,7 +160,7 @@ public class ResWarnDBTimer {
         resWarn.setStartTime(DateUtil.parseDate(sTime));
         resWarn.setWarnMsg(warnMsgStr);
         resWarn.setWarnTime(DateUtil.parseDate(eTime));
-        ResWarnMapper resWarnDao = (ResWarnMapper)SpringContextHolder.getBean("ResWarnMapper");
+        ResWarnMapper resWarnDao = (ResWarnMapper)SpringContextHolder.getBean("resWarnMapper");
         resWarnDao.insert(resWarn);
         logger.info(LogBuilderUtil.getBuilder("ConfigScheduleWarnLog", "定时查询告警信息", "新增告警信息成功").build());
     }
